@@ -25,9 +25,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-
-Route::middleware(['auth', 'verified'])->group(function(){
-    Route::resource('chat', ChatController::class);
+Route::middleware('auth')->controller(ChatController::class)->name('chat.')->group(function () {
+    Route::get('chat', 'index')->name('index');
+    Route::post('chat/{id}', 'userData')->name('userData');
 });
 
 require __DIR__.'/auth.php';
