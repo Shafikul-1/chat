@@ -3,9 +3,19 @@ import { ref, reactive, defineProps } from 'vue'
 import { Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 const chatAllUser = ref(false);
+const message = ref('');
+const files = ref(null);
 const props = defineProps({
     users: Array,
 });
+
+function sentMessage() {
+    if (message.value.trim()) {
+       // Inertia.post('/chat/1', { message: message.value });
+        message.value = ''; // Clear the input after sending
+    }
+    console.log(message.value);
+}
 
 </script>
 
@@ -116,15 +126,16 @@ const props = defineProps({
                                         </span>
                                     </div>
                                     <div class="flex-1">
-                                        <input type="text" name="message" autofocus
+                                        <input v-model="message" autofocus
                                             class="w-full block focus:outline-none outline-none py-4 px-4 bg-transparent border-none focus:border-none focus:ring-0 dark:text-white"
-                                            placeholder="Enter Text ...." autocomplete="off">
+                                            placeholder="Enter Text ...." autocomplete="off" />
 
                                     </div>
                                     <div class="flex-2 w-32 p-2 flex content-center items-center">
                                         <div class="flex-1 text-center">
                                             <span class="text-gray-400 hover:text-gray-800">
                                                 <span class="inline-block align-text-bottom cursor-pointer ">
+                                                    <input type="file" name="" id="" class="hidden">
                                                     <svg fill="none" stroke-linecap="round" stroke-linejoin="round"
                                                         stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"
                                                         class="w-6 h-6">
@@ -136,7 +147,8 @@ const props = defineProps({
                                             </span>
                                         </div>
                                         <div class="flex-1">
-                                            <button class="bg-blue-400 w-10 h-10 rounded-full inline-block">
+                                            <button @click="sentMessage"
+                                                class="bg-blue-400 w-10 h-10 rounded-full inline-block">
                                                 <span class="inline-block align-text-bottom">
                                                     <svg fill="none" stroke="currentColor" stroke-linecap="round"
                                                         stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"

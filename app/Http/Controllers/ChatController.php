@@ -14,6 +14,6 @@ class ChatController extends Controller
         return Inertia::render('Chat/Index', ['users' => $allUser]);
     }
     public function userData($id) {
-       echo "check";
+        dd($id);
     }
 }
