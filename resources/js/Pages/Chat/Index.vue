@@ -1,8 +1,12 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, defineProps } from 'vue'
 import { Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 const chatAllUser = ref(false);
+const props = defineProps({
+    users: Array,
+});
+
 </script>
 
 <template>
@@ -11,40 +15,42 @@ const chatAllUser = ref(false);
             <div class="main-body container m-auto w-11/12 h-full flex flex-col">
                 <div class="main flex-1 flex flex-col">
                     <div class="flex-1 flex h-full relative lg:gap-3">
-                        <div :class="{ 'hidden': !chatAllUser }"  class="sidebar  absolute w-[95%] left-[2rem] top-0 z-50 lg:flex lg:static lg:w-[35%] min-h-[88vh] overflow-y-auto flex-2 flex-col  bg-gray-700 p-3 lg:bg-transparent ">
+                        <div :class="{ 'hidden': !chatAllUser }"
+                            class="sidebar border-r-indigo-300 border-r absolute w-[95%] left-[2rem] top-0 z-50 lg:flex lg:static lg:w-[35%] min-h-[88vh] overflow-y-auto flex-2 flex-col  bg-gray-700 p-3 lg:bg-transparent ">
                             <div class="search flex-2 pb-6 px-2">
-                                <input type="text"
-                                    class="outline-none py-2 block w-full bg-transparent border-b-2 "
+                                <input type="text" class="outline-none py-2 block w-full bg-transparent border-b-2 "
                                     placeholder="Search User">
                             </div>
 
                             <!-- User All -->
                             <div class="flex-1 h-full overflow-auto px-2">
-                                <div
+                                <Link :href="route('chat.userData', user.id)" v-for="(user, index) in props.users"
+                                    :key="index.id"
                                     class="entry cursor-pointer transform hover:bg-gray-700 hover:shadow-md hover:shadow-indigo-400 transition-all duration-300  bg-white dark:bg-gray-600  mb-4 rounded p-4 flex shadow-md border-l-4 border-red-500">
-                                    <div class="flex-2">
-                                        <div class="w-12 h-12 relative">
-                                            <img class="w-12 h-12 rounded-full mx-auto"
-                                                src="https://raw.githubusercontent.com/huzgrx/Messaging-APP/refs/heads/main/src/assets/images/clouds.png"
-                                                alt="chat-user" />
-                                            <span
-                                                class="absolute w-4 h-4 bg-gray-400 rounded-full right-0 bottom-0 border-2 border-white"></span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-1 px-2">
-                                        <div class="truncate w-32"><span class="text-gray-800 dark:text-white">Karp Bonolo</span></div>
-                                        <div><small class="text-gray-600 dark:text-white">Yea, Sure!</small></div>
-                                    </div>
-                                    <div class="flex-2 text-right">
-                                        <div><small class="text-gray-500 dark:text-white">15 April</small></div>
-                                        <div>
-                                            <small
-                                                class="text-xs bg-red-500 text-white rounded-full h-6 w-6 leading-6 text-center inline-block">
-                                                10
-                                            </small>
-                                        </div>
+                                <div class="flex-2">
+                                    <div class="w-12 h-12 relative">
+                                        <img class="w-12 h-12 rounded-full mx-auto"
+                                            src="https://raw.githubusercontent.com/huzgrx/Messaging-APP/refs/heads/main/src/assets/images/clouds.png"
+                                            alt="chat-user" />
+                                        <span
+                                            class="absolute w-4 h-4 bg-gray-400 rounded-full right-0 bottom-0 border-2 border-white"></span>
                                     </div>
                                 </div>
+                                <div class="flex-1 px-2">
+                                    <div class="truncate w-32"><span class="text-gray-800 dark:text-white">{{ user.name
+                                            }}</span></div>
+                                    <div><small class="text-gray-600 dark:text-white">{{ user.email }}</small></div>
+                                </div>
+                                <div class="flex-2 text-right">
+                                    <div><small class="text-gray-500 dark:text-white">15 April</small></div>
+                                    <div>
+                                        <small
+                                            class="text-xs bg-red-500 text-white rounded-full h-6 w-6 leading-6 text-center inline-block">
+                                            10
+                                        </small>
+                                    </div>
+                                </div>
+                                </Link>
                             </div>
                             <!-- User All -->
 
@@ -52,9 +58,10 @@ const chatAllUser = ref(false);
                         <div class="chat-area flex-1 flex flex-col">
                             <div class="flex-3">
                                 <h2 class="text-xl py-1 mb-8 border-b-2 border-gray-200 dark:text-white">
-                                        <span class="lg:hidden">
-                                            <i @click="chatAllUser = !chatAllUser" class="fa-solid fa-bars  mr-5 cursor-pointer w-5 h-5" ></i>
-                                        </span>
+                                    <span class="lg:hidden">
+                                        <i @click="chatAllUser = !chatAllUser"
+                                            class="fa-solid fa-bars  mr-5 cursor-pointer w-5 h-5"></i>
+                                    </span>
                                     Chatting with
                                     <b>Mercedes Yemelyan</b>
                                 </h2>
@@ -76,7 +83,8 @@ const chatAllUser = ref(false);
                                         <div class="inline-block bg-gray-300 rounded-full p-2 px-6 text-gray-700">
                                             <span>All travel expenses are covered by us of course :D</span>
                                         </div>
-                                        <div class="pl-4"><small class="text-gray-500 dark:text-gray-300">15 April</small></div>
+                                        <div class="pl-4"><small class="text-gray-500 dark:text-gray-300">15
+                                                April</small></div>
                                     </div>
                                 </div>
                                 <div class="message me mb-4 flex text-right">
@@ -84,7 +92,8 @@ const chatAllUser = ref(false);
                                         <div class="inline-block bg-blue-600 rounded-full p-2 px-6 text-white">
                                             <span>I accept. Thank you very much.</span>
                                         </div>
-                                        <div class="pr-4"><small class="text-gray-500 dark:text-gray-300">15 April</small></div>
+                                        <div class="pr-4"><small class="text-gray-500 dark:text-gray-300">15
+                                                April</small></div>
                                     </div>
                                 </div>
                                 <!-- Chat Text -->
