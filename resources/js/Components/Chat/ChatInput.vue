@@ -3,21 +3,39 @@ import { ref, reactive } from 'vue'
 import { Link, usePage, useForm } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia';
 
-const message = ref('');
 const chatId = sessionStorage.getItem('chatId');
+const message = ref('');
+const attachments = null;
 
 
-const submitdata = () => {
-    Inertia.post(route('chat.storeMessage', chatId), {
-        content: 'test here',
-        other: 'other tata',
-        newtext: 'new work',
-        message: message.value
-    });
-    message.value = '';
-}
+const checkMessage = usePage().props.flash.message;
+// const submitdata = () => {
+// Inertia.post(route('chat.storeMessage', chatId), {
+//     content: 'test here',
+//     other: 'other tata',
+//     newtext: 'new work',
+//     message: message.value
+// }, {
+//     preserveScroll: true,  // This will prevent the page from reloading or scrolling
+//     preserveState: true,   // This will keep the page's state intact
+//     onSuccess: () => {
+//         message.value = '';  // Clear the message field after success
+//     },
+//     onError: (errors) => {
+//         console.error(errors);  // Optional: Handle validation or server errors
+//     }
+// });
+// }
 // const user = usePage().props.auth.user;
 // console.log(user);
+const submitMessage = () => {
+    // Check if the message is not empty before submitting
+    if (message.value.trim() !== '') {
+        // Here you can handle the submission logic
+        // After submission logic, clear the input field
+        message.value = '';
+    }
+};
 
 </script>
 
@@ -30,9 +48,8 @@ const submitdata = () => {
                 </span>
             </div>
             <div class="flex-1">
-                <input autofocus
-                    class="w-full block focus:outline-none outline-none py-4 px-4 bg-transparent border-none focus:border-none focus:ring-0 dark:text-white"
-                    v-model="message" placeholder="Enter Text ...." autocomplete="off" />
+                <input autofocus v-model="message" placeholder="Enter Text ...." autocomplete="off"
+                    class="w-full block focus:outline-none outline-none py-4 px-4 bg-transparent border-none focus:border-none focus:ring-0 dark:text-white" />
 
             </div>
             <div class="flex-2 w-32 p-2 flex content-center items-center">
@@ -45,13 +62,15 @@ const submitdata = () => {
                     </span>
                 </div>
                 <div class="flex-1">
-                    <!-- <Link :href="route('chat.storeMessage', chatId)" :data="{ message: message }" method="post" as="button" preserveScroll -->
-                    <button @click="submitdata" class="bg-blue-400 w-10 h-10 rounded-full inline-block">
-                        <span class="inline-block align-text-bottom">
-                            <i class="fa-solid fa-check"></i>
-                        </span>
-                    </button>
-                    <!-- </Link> -->
+                    <!-- <button @click="submitdata" class="bg-blue-400 w-10 h-10 rounded-full inline-block"> -->
+                    <Link :href="route('chat.storeMessage', chatId)"
+                        :data="{ message: message, attachments: attachments }" method="post" as="button" preserveScroll
+                        @click.prevent="submitMessage">
+                    <span class="inline-block align-text-bottom">
+                        <i class="fa-solid fa-check"></i>
+                    </span>
+                    </Link>
+                    <!-- </button> -->
                 </div>
             </div>
         </div>

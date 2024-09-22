@@ -13,11 +13,13 @@ class ChatController extends Controller
 {
     public function index($id = null)
     {
+        $userId = Auth::user()->id;
+
         $userMessage = null;
-        $frinds = Friendship::with('friends')->where('user_id', Auth::user()->id)->get();
+        $frinds = Friendship::with('friends')->where('user_id', $userId)->orWhere('friend_id', $userId)->get();
+        // return $frinds;
         if ($id) {
             // $userMessage = Message::whereRaw('sender_id = ' . Auth::user()->id . ' || receiver_id = ' . Auth::user()->id )->get();
-            $userId = Auth::user()->id;
             $userMessage = Message::where(function ($query) use ($userId) {
                 $query->where('sender_id', $userId)->orWhere('receiver_id', $userId);
             })
@@ -38,22 +40,23 @@ class ChatController extends Controller
             $attachments = $request->attachments;
 
             if ($checkUser->status == 'blocked') {
-                return "You are blocked";
+                return response()->json(['message' => 'You are blocked'], 403);
             } else if ($checkUser->status == 'pending') {
                 $countMessage = count($checkMessage);
                 if ($countMessage < 2) {
                     $storeDataFN = $this->storeData($id, $content, $attachments);
                     if ($storeDataFN) {
+
                         return back();
                     } else {
                         return $storeDataFN;
                     };
                 } else {
-                    return Inertia::render('Chat/Index');
+                    return back();
                 }
             } else {
                 $this->storeData($id, $content, $attachments);
-                return back();
+                return back()->with(['message', 'success sent message']);
             }
         }
         return "wrong User";
