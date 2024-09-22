@@ -20,7 +20,7 @@ class ChatController extends Controller
         if($id){
             $userMessage = Message::where('sender_id', Auth::user()->id)->where('sender_id', $id)->get();
         }
-        return Inertia::render('Chat/Index', ['users' => $allUser, 'message' => $userMessage, 'frinds' => $frinds]);
+        return Inertia::render('Chat/Index', ['users' => $allUser, 'messageData' => $userMessage, 'frinds' => $frinds]);
     }
 
     public function storeMessage(Request $request, $id){

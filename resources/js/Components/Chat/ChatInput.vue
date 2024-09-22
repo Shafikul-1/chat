@@ -1,6 +1,6 @@
 <script setup>
-//import { ref, reactive } from 'vue'
-
+import { ref, reactive } from 'vue'
+const message = ref('');
 </script>
 
 <template>

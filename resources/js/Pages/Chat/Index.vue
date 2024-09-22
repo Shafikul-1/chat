@@ -8,19 +8,19 @@ import AllUser from '@/Components/Chat/AllUser.vue';
 import ChatUser from '@/Components/Chat/ChatUser.vue';
 const props = defineProps({
     users: Array,
-    message: Array,
+    messageData: Array,
     frinds: Array,
 });
 
 
 const chatAllUser = ref(false);
-const message = ref('');
+
 
 const showModal = ref(false);
 const openModal = () => {
     showModal.value = true;
 }
-console.log(props.message);
+
 
 </script>
 
@@ -51,7 +51,7 @@ console.log(props.message);
                             <!-- User All -->
 
                         </div>
-                        <template v-if="props.message != null">
+                        <template v-if="props.messageData != null">
                             <div class="chat-area flex-1 flex flex-col">
                                 <!-- Chat Text -->
                                 <div class="flex-3">
@@ -64,7 +64,7 @@ console.log(props.message);
                                         <b>Mercedes Yemelyan</b>
                                     </h2>
                                 </div>
-                                <ChatText :messageData="props.message" />
+                                <ChatText :messageData="props.messageData" />
                                 <!-- Chat Text -->
 
 
