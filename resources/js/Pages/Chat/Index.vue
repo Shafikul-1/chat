@@ -20,14 +20,14 @@ const showModal = ref(false);
 const openModal = () => {
     showModal.value = true;
 }
-// console.log(props.frinds);
+console.log(props.message);
 
 </script>
 
 <template>
     <AuthenticatedLayout>
         <!-- Modal All User-->
-        <AllUser :showModal="showModal" :allUser="props.users"/>
+        <AllUser :showModal="showModal" :allUser="props.users" />
         <!-- Modal All User-->
         <div class="flex-1 dark:bg-[#111827] bg-gray-100 w-full h-full mt-5">
             <div class="main-body container m-auto w-11/12 h-full flex flex-col">
@@ -44,7 +44,7 @@ const openModal = () => {
                             <!-- User All -->
                             <template v-if="props.users != null">
 
-                               <ChatUser :allFrinds="props.frinds"/>
+                                <ChatUser :allFrinds="props.frinds" />
 
                             </template>
                             <div class="text-center dark:text-white font-bold text-4xl" v-else>No Added User</div>
@@ -53,6 +53,7 @@ const openModal = () => {
                         </div>
                         <template v-if="props.message != null">
                             <div class="chat-area flex-1 flex flex-col">
+                                <!-- Chat Text -->
                                 <div class="flex-3">
                                     <h2 class="text-xl py-1 mb-8 border-b-2 border-gray-200 dark:text-white">
                                         <span class="lg:hidden">
@@ -63,12 +64,8 @@ const openModal = () => {
                                         <b>Mercedes Yemelyan</b>
                                     </h2>
                                 </div>
-                                <div class="messages flex-1 overflow-auto">
-
-                                    <!-- Chat Text -->
-                                    <ChatText />
-                                    <!-- Chat Text -->
-                                </div>
+                                <ChatText :messageData="props.message" />
+                                <!-- Chat Text -->
 
 
                                 <!-- Chat filed Content -->

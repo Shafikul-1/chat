@@ -9,7 +9,7 @@ const props = defineProps({
 
 <template>
     <div class="flex-1 h-full overflow-auto px-2">
-        <Link :href="route('chat.index', user.id)" v-for="(user, index) in props.allFrinds" :key="index.id"
+        <Link :href="route('chat.index', user.friend_id)" v-for="(user, index) in props.allFrinds" :key="index.id"
             class="entry cursor-pointer transform hover:bg-gray-700 hover:shadow-md hover:shadow-indigo-400 transition-all duration-300  bg-white dark:bg-gray-600  mb-4 rounded p-4 flex shadow-md border-l-4 border-red-500">
         <div class="flex-2">
             <div class="w-12 h-12 relative">
@@ -20,13 +20,21 @@ const props = defineProps({
             </div>
         </div>
         <div class="flex-1 px-2">
-            <div class="truncate w-32"><span class="text-gray-800 dark:text-white">{{
-                user.friends.name
-            }}</span></div>
-            <div><small class="text-gray-600 dark:text-white">{{ user.friends.email }}</small></div>
+            <div class="truncate w-32">
+                <span class="text-gray-800 dark:text-white">
+                    {{ user.friends.name }}
+                </span>
+            </div>
+            <div>
+                <small class="text-gray-600 dark:text-white">
+                    {{ user.friends.email }}
+                </small>
+            </div>
         </div>
         <div class="flex-2 text-right">
-            <div><small class="text-gray-500 dark:text-white">15 April</small></div>
+            <div>
+                <small class="text-gray-500 dark:text-white">15 April</small>
+            </div>
             <div>
                 <small class="text-xs bg-red-500 text-white rounded-full h-6 w-6 leading-6 text-center inline-block">
                     10

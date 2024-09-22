@@ -14,6 +14,8 @@ const hideModal = () => {
     console.log('hidden modal');
 
 }
+// const data = Inertia.get(route('check'));
+// console.log(data);
 
 </script>
 
