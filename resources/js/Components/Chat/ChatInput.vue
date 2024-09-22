@@ -1,6 +1,15 @@
 <script setup>
 import { ref, reactive } from 'vue'
+import { Link, usePage, useForm } from '@inertiajs/vue3';
+
 const message = ref('');
+const chatId = sessionStorage.getItem('chatId');
+
+
+
+// const user = usePage().props.auth.user;
+// console.log(user);
+
 </script>
 
 <template>
@@ -12,9 +21,9 @@ const message = ref('');
                 </span>
             </div>
             <div class="flex-1">
-                <input v-model="message" autofocus
+                <input autofocus
                     class="w-full block focus:outline-none outline-none py-4 px-4 bg-transparent border-none focus:border-none focus:ring-0 dark:text-white"
-                    placeholder="Enter Text ...." autocomplete="off" />
+                    v-model="message" placeholder="Enter Text ...." autocomplete="off" />
 
             </div>
             <div class="flex-2 w-32 p-2 flex content-center items-center">
@@ -27,11 +36,12 @@ const message = ref('');
                     </span>
                 </div>
                 <div class="flex-1">
-                    <button @click="sentMessage" class="bg-blue-400 w-10 h-10 rounded-full inline-block">
-                        <span class="inline-block align-text-bottom">
-                            <i class="fa-solid fa-check"></i>
-                        </span>
-                    </button>
+                    <Link :href="route('chat.storeMessage', chatId)" :data="{ message: message }" method="post" as="button" preserveScroll
+                        class="bg-blue-400 w-10 h-10 rounded-full inline-block">
+                    <span class="inline-block align-text-bottom">
+                        <i class="fa-solid fa-check"></i>
+                    </span>
+                    </Link>
                 </div>
             </div>
         </div>

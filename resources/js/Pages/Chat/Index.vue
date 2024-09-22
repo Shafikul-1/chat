@@ -20,6 +20,7 @@ const showModal = ref(false);
 const openModal = () => {
     showModal.value = true;
 }
+// console.log(props.messageData);
 
 
 </script>

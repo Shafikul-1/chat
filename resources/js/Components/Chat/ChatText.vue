@@ -1,15 +1,19 @@
 <script setup>
 import { ref, reactive, defineProps } from 'vue'
+import { usePage } from '@inertiajs/vue3';
 const props = defineProps({
     messageData: Array
 });
-
+const user = usePage().props.auth.user;
+console.log(user.id);
 </script>
 
 <template>
 
     <div class="messages flex-1 overflow-auto">
-        <!-- <div class="message mb-4 flex">
+        <div class="message mb-4 flex "
+        :class="{'text-right': message.sender_id == user.id}"
+        v-for="(message, index) in messageData" :key="index.id">
             <div class="flex-2">
                 <div class="w-12 h-12 relative">
                     <img class="w-12 h-12 rounded-full mx-auto"
@@ -19,20 +23,10 @@ const props = defineProps({
                 </div>
             </div>
             <div class="flex-1 px-2">
-                <div class="inline-block bg-gray-300 rounded-full p-2 px-6 text-gray-700">
-                    <span>All travel expenses are covered by us of course :D</span>
-                </div>
-                <div class="pl-4">
-                    <small class="text-gray-500 dark:text-gray-300">15 April</small>
-                </div>
-            </div>
-        </div> -->
-        <div class="message me mb-4 flex text-right" v-for="(message, index) in messageData" :key="index.id">
-            <div class="flex-1 px-2">
-                <div class="inline-block bg-blue-600 rounded-full p-2 px-6 text-white">
+                <div class="inline-block  rounded-full p-2 px-6 " :class="message.sender_id == user.id ? 'bg-gray-300 text-gray-700' : 'bg-blue-600 text-white'">
                     <span>{{ message.content }}</span>
                 </div>
-                <div class="pr-4">
+                <div class="pl-4">
                     <small class="text-gray-500 dark:text-gray-300">{{ message.sent_at }}</small>
                 </div>
             </div>

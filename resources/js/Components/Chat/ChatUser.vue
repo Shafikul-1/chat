@@ -4,17 +4,20 @@ import { Link } from '@inertiajs/vue3';
 const props = defineProps({
     allFrinds: Array,
 });
-
+const chatId = (id)=>{
+    sessionStorage.setItem('chatId', id);
+}
 </script>
 
 <template>
     <div class="flex-1 h-full overflow-auto px-2">
         <Link :href="route('chat.index', user.friend_id)" v-for="(user, index) in props.allFrinds" :key="index.id"
+        @click="chatId(user.friend_id)"
             class="entry cursor-pointer transform hover:bg-gray-700 hover:shadow-md hover:shadow-indigo-400 transition-all duration-300  bg-white dark:bg-gray-600  mb-4 rounded p-4 flex shadow-md border-l-4 border-red-500">
         <div class="flex-2">
             <div class="w-12 h-12 relative">
                 <img class="w-12 h-12 rounded-full mx-auto"
-                    src="https://raw.githubusercontent.com/huzgrx/Messaging-APP/refs/heads/main/src/assets/images/clouds.png"
+                    src="http://localhost:8000/public/107.jpg"
                     alt="chat-user" />
                 <span class="absolute w-4 h-4 bg-gray-400 rounded-full right-0 bottom-0 border-2 border-white"></span>
             </div>

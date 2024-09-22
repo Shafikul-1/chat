@@ -17,13 +17,22 @@ class ChatController extends Controller
         $allUser = null;
         $frinds = Friendship::with('friends')->where('user_id', Auth::user()->id)->get();
         $allUser = User::all();
-        if($id){
-            $userMessage = Message::where('sender_id', Auth::user()->id)->where('sender_id', $id)->get();
+        if ($id) {
+            // $userMessage = Message::whereRaw('sender_id = ' . Auth::user()->id . ' || receiver_id = ' . Auth::user()->id )->get();
+            $userId = Auth::user()->id;
+            $userMessage = Message::where(function ($query) use ($userId) {
+                $query->where('sender_id', $userId)->orWhere('receiver_id', $userId);
+            })
+                ->where(function ($query) use ($id) {
+                    $query->where('sender_id', $id)->orWhere('receiver_id', $id);
+                })->get();
         }
         return Inertia::render('Chat/Index', ['users' => $allUser, 'messageData' => $userMessage, 'frinds' => $frinds]);
     }
 
-    public function storeMessage(Request $request, $id){
+    public function storeMessage(Request $request, $id)
+    {
+        // return $id;
         $store = Message::create([
             'sender_id' => Auth::user()->id,
             'receiver_id' => $id,
@@ -32,7 +41,8 @@ class ChatController extends Controller
         ]);
         return back();
     }
-    public function addChat($id){
+    public function addChat($id)
+    {
         Friendship::firstOrCreate([
             'user_id' => Auth::user()->id,
             'friend_id' => $id,
@@ -40,7 +50,8 @@ class ChatController extends Controller
         return back();
     }
 
-    public function allUser(){
+    public function allUser()
+    {
         $frinds = Friendship::with('friends')->where('user_id', Auth::user()->id)->get();
         return $frinds;
     }
