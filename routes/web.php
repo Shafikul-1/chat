@@ -26,8 +26,9 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth')->controller(ChatController::class)->name('chat.')->group(function () {
-    Route::get('chat', 'index')->name('index');
-    Route::post('chat/{id}', 'userData')->name('userData');
+    Route::get('chat/{id?}', 'index')->name('index');
+    Route::post('chat/{id}', 'storeMessage')->name('storeMessage');
+    Route::post('chat/user/{id}', 'addChat')->name('addChat');
 });
 
 require __DIR__.'/auth.php';
