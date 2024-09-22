@@ -15,11 +15,13 @@ class ChatController extends Controller
     {
         $userMessage = null;
         $allUser = null;
+        $chatUser = null;
+        $frinds = Friendship::with('friends')->where('user_id', Auth::user()->id)->get();
         $allUser = User::all();
         if($id){
             $userMessage = Message::where('sender_id', $id)->get();
         }
-        return Inertia::render('Chat/Index', ['users' => $allUser, 'message' => $userMessage]);
+        return Inertia::render('Chat/Index', ['users' => $allUser, 'message' => $userMessage, 'frinds' => $frinds]);
     }
 
     public function storeMessage(Request $request, $id){

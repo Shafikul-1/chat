@@ -9,6 +9,7 @@ import ChatUser from '@/Components/Chat/ChatUser.vue';
 const props = defineProps({
     users: Array,
     message: Array,
+    frinds: Array,
 });
 
 
@@ -19,6 +20,7 @@ const showModal = ref(false);
 const openModal = () => {
     showModal.value = true;
 }
+// console.log(props.frinds);
 
 </script>
 
@@ -42,7 +44,7 @@ const openModal = () => {
                             <!-- User All -->
                             <template v-if="props.users != null">
 
-                               <ChatUser :users="props.users"/>
+                               <ChatUser :allFrinds="props.frinds"/>
 
                             </template>
                             <div class="text-center dark:text-white font-bold text-4xl" v-else>No Added User</div>
