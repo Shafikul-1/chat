@@ -1,12 +1,21 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { Link, usePage, useForm } from '@inertiajs/vue3';
+import { Inertia } from '@inertiajs/inertia';
 
 const message = ref('');
 const chatId = sessionStorage.getItem('chatId');
 
 
-
+const submitdata = () => {
+    Inertia.post(route('chat.storeMessage', chatId), {
+        content: 'test here',
+        other: 'other tata',
+        newtext: 'new work',
+        message: message.value
+    });
+    message.value = '';
+}
 // const user = usePage().props.auth.user;
 // console.log(user);
 
@@ -36,12 +45,13 @@ const chatId = sessionStorage.getItem('chatId');
                     </span>
                 </div>
                 <div class="flex-1">
-                    <Link :href="route('chat.storeMessage', chatId)" :data="{ message: message }" method="post" as="button" preserveScroll
-                        class="bg-blue-400 w-10 h-10 rounded-full inline-block">
-                    <span class="inline-block align-text-bottom">
-                        <i class="fa-solid fa-check"></i>
-                    </span>
-                    </Link>
+                    <!-- <Link :href="route('chat.storeMessage', chatId)" :data="{ message: message }" method="post" as="button" preserveScroll -->
+                    <button @click="submitdata" class="bg-blue-400 w-10 h-10 rounded-full inline-block">
+                        <span class="inline-block align-text-bottom">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+                    </button>
+                    <!-- </Link> -->
                 </div>
             </div>
         </div>

@@ -9,7 +9,6 @@ import ChatUser from '@/Components/Chat/ChatUser.vue';
 import { Inertia } from '@inertiajs/inertia';
 import axios from 'axios';
 const props = defineProps({
-    users: Array,
     messageData: Array,
     frinds: Array,
 });

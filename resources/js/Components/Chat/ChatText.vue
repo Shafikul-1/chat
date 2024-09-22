@@ -14,10 +14,10 @@ const user = usePage().props.auth.user;
         <div class="message mb-4 flex "
         :class="{'text-right': message.sender_id == user.id}"
         v-for="(message, index) in messageData" :key="index.id">
-            <div class="flex-2">
+            <div class="flex-2" v-if="message.sender_id != user.id">
                 <div class="w-12 h-12 relative">
                     <img class="w-12 h-12 rounded-full mx-auto"
-                        src="https://tailwindcss-chat.vercel.app/resources/profile-image.png" alt="chat-user" />
+                        src="https://readymadeui.com/team-1.webp" alt="chat-user" />
                     <span class="absolute w-4 h-4 bg-gray-400 rounded-full right-0 bottom-0 border-2 border-white">
                     </span>
                 </div>
