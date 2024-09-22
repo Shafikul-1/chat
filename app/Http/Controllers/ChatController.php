@@ -40,19 +40,18 @@ class ChatController extends Controller
             $attachments = $request->attachments;
 
             if ($checkUser->status == 'blocked') {
-                return response()->json(['message' => 'You are blocked'], 403);
+                return 'You are blocked';
             } else if ($checkUser->status == 'pending') {
                 $countMessage = count($checkMessage);
                 if ($countMessage < 2) {
                     $storeDataFN = $this->storeData($id, $content, $attachments);
                     if ($storeDataFN) {
-
                         return back();
                     } else {
                         return $storeDataFN;
                     };
                 } else {
-                    return back();
+                    return "Your invitaion Not accepted";
                 }
             } else {
                 $this->storeData($id, $content, $attachments);
