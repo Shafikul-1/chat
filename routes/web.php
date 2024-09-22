@@ -26,10 +26,11 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth')->controller(ChatController::class)->name('chat.')->group(function () {
+    Route::get('all-users', 'allUsers')->name('allUsers');
     Route::get('chat/{id?}', 'index')->name('index');
     Route::post('chat/{id}', 'storeMessage')->name('storeMessage');
     Route::post('chat/user/{id}', 'addChat')->name('addChat');
 });
 
-Route::get('check', [Chatcontroller::class, 'allUser'])->name('check');
+Route::get('check', [Chatcontroller::class, 'allUsers'])->name('check');
 require __DIR__.'/auth.php';

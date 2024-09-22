@@ -49,10 +49,9 @@ class ChatController extends Controller
         ]);
         return back();
     }
-
-    public function allUser()
+    public function allUsers()
     {
-        $frinds = Friendship::with('friends')->where('user_id', Auth::user()->id)->get();
-        return $frinds;
+        $allUser = User::all();
+        return response()->json(['allUsers' => $allUser]);
     }
 }

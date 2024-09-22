@@ -13,7 +13,7 @@ const chatId = (id)=>{
     <div class="flex-1 h-full overflow-auto px-2">
         <Link :href="route('chat.index', user.friend_id)" v-for="(user, index) in props.allFrinds" :key="index.id"
         @click="chatId(user.friend_id)"
-            class="entry cursor-pointer transform hover:bg-gray-700 hover:shadow-md hover:shadow-indigo-400 transition-all duration-300  bg-white dark:bg-gray-600  mb-4 rounded p-4 flex shadow-md border-l-4 border-red-500">
+            class="entry cursor-pointer transform hover:bg-gray-700 hover:shadow-md text-black hover:shadow-indigo-400 transition-all duration-300  bg-white dark:bg-gray-600  mb-4 rounded p-4 flex shadow-md border-l-4 border-red-500">
         <div class="flex-2">
             <div class="w-12 h-12 relative">
                 <img class="w-12 h-12 rounded-full mx-auto"

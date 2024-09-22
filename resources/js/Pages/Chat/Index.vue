@@ -1,11 +1,13 @@
 <script setup>
 import { ref, reactive, defineProps } from 'vue'
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import ChatInput from '@/Components/Chat/ChatInput.vue';
 import ChatText from '@/Components/Chat/ChatText.vue';
 import AllUser from '@/Components/Chat/AllUser.vue';
 import ChatUser from '@/Components/Chat/ChatUser.vue';
+import { Inertia } from '@inertiajs/inertia';
+import axios from 'axios';
 const props = defineProps({
     users: Array,
     messageData: Array,
@@ -13,22 +15,36 @@ const props = defineProps({
 });
 
 
+
 const chatAllUser = ref(false);
 
-
+const allUsers = ref([]);
 const showModal = ref(false);
+const waitLoad = ref(true);
 const openModal = () => {
     showModal.value = true;
-}
-// console.log(props.messageData);
+    axios.get(route('chat.allUsers'))
+        .then(response => {
+            allUsers.value = response.data.allUsers;
+            waitLoad.value = false;
+        }).catch(error => {
+            console.log('error -- ' + error);
 
+        })
+    // Inertia.get(route('chat.allUsers'), {}, {
+    //     onSuccess: (response)=>{
+    //         allUsers.value = response.props.allUsers;
+    //     }
+    // });
+
+};
 
 </script>
 
 <template>
     <AuthenticatedLayout>
         <!-- Modal All User-->
-        <AllUser :showModal="showModal" :allUser="props.users" />
+        <AllUser :showModal="showModal" :allUser="allUsers" :waitLoad="waitLoad"/>
         <!-- Modal All User-->
         <div class="flex-1 dark:bg-[#111827] bg-gray-100 w-full h-full mt-5">
             <div class="main-body container m-auto w-11/12 h-full flex flex-col">
@@ -43,7 +59,7 @@ const openModal = () => {
                             </div>
 
                             <!-- User All -->
-                            <template v-if="props.users != null">
+                            <template v-if="props.frinds != null">
 
                                 <ChatUser :allFrinds="props.frinds" />
 

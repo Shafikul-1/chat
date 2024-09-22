@@ -5,7 +5,7 @@ const props = defineProps({
     messageData: Array
 });
 const user = usePage().props.auth.user;
-console.log(user.id);
+// console.log(user.id);
 </script>
 
 <template>

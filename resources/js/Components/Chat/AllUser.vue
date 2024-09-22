@@ -4,6 +4,7 @@ import CustomModal from '../CustomModal.vue';
 import { Inertia } from '@inertiajs/inertia';
 import { Link } from '@inertiajs/vue3';
 const props = defineProps({
+    waitLoad: Boolean,
     showModal: Boolean,
     allUser: Array
 });
@@ -40,8 +41,11 @@ const hideModal = () => {
 
         </div>
 
+        <template v-if="waitLoad">
+            <h3 class="text-center font-bold text-4xl">Loding ....</h3>
+        </template>
         <!-- All User -->
-        <div class="mt-6 divide-y" v-for="(user, index) in props.allUser" :key="index.id">
+        <div v-else class="mt-6 divide-y" v-for="(user, index) in props.allUser" :key="index.id">
             <div class="flex flex-wrap items-center gap-4 py-3">
                 <img src='https://readymadeui.com/team-1.webp' class="w-11 h-11 rounded-full" />
                 <div>
@@ -50,7 +54,7 @@ const hideModal = () => {
                 </div>
                 <Link :href="route('chat.addChat', user.id)" as="button" method="post"
                     class="text-xs  mt-0.5 ml-auto bg-indigo-500 px-4 py-1 rounded-md hover:bg-indigo-300 text-white hover:text-black cursor-pointer">
-                    Invite
+                Invite
                 </Link>
             </div>
         </div>
