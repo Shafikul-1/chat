@@ -32,5 +32,5 @@ Route::middleware('auth')->controller(ChatController::class)->name('chat.')->gro
     Route::post('chat/user/{id}', 'addChat')->name('addChat');
 });
 
-Route::get('check', [Chatcontroller::class, 'allUsers'])->name('check');
+Route::get('check/{id}', [Chatcontroller::class, 'check'])->name('check');
 require __DIR__.'/auth.php';

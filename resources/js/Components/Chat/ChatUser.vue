@@ -7,7 +7,7 @@ const props = defineProps({
 const chatId = (id) => {
     sessionStorage.setItem('chatId', id);
 }
-console.log(props.allFriends);
+// console.log(props.allFriends);
 
 </script>
 

@@ -30,12 +30,6 @@ const openModal = () => {
             console.log('error -- ' + error);
 
         })
-    // Inertia.get(route('chat.allUsers'), {}, {
-    //     onSuccess: (response)=>{
-    //         allUsers.value = response.props.allUsers;
-    //     }
-    // });
-
 };
 
 
@@ -44,7 +38,7 @@ const openModal = () => {
 <template>
     <AuthenticatedLayout>
         <!-- Modal All User-->
-        <AllUser :showModal="showModal" :allUser="allUsers" :waitLoad="waitLoad" />
+        <AllUser :showModal="showModal" :allUser="allUsers" :waitLoad="waitLoad" @closeModal="showModal = false"/>
         <!-- Modal All User-->
         <div class="flex-1 dark:bg-[#111827] bg-gray-100 w-full h-full mt-5">
             <div class="main-body container m-auto w-11/12 h-full flex flex-col">

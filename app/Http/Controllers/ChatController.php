@@ -34,8 +34,8 @@ class ChatController extends Controller
                 return $friend->sent_requests;
             }
         });
-
         // return $friends;
+
 
 
         $userMessage = null;
@@ -71,13 +71,10 @@ class ChatController extends Controller
         $checkUser = Friendship::findOrFail($id);
         // return $checkUser;
         if ($checkUser) {
-            // $checkMessage = Message::where('sender_id', $checkUser->user_id)->where('receiver_id', $checkUser->friend_id)->get();
             $checkMessage = Message::where(function ($query) use ($checkUser) {
-                // First condition: Check if current user is sender and friend is receiver
                 $query->where('sender_id', $checkUser->user_id)
                     ->where('receiver_id', $checkUser->friend_id);
             })->orWhere(function ($query) use ($checkUser) {
-                // Second condition: Check if current user is receiver and friend is sender
                 $query->where('receiver_id', $checkUser->user_id)
                     ->where('sender_id', $checkUser->friend_id);
             })->get();
@@ -101,7 +98,7 @@ class ChatController extends Controller
                     return "Your invitaion Not accepted the user";
                 }
             } else {
-               $storeData = $this->storeData($checkUser->friend_id, $checkUser->user_id, $content, $attachments);
+                $storeData = $this->storeData($checkUser->friend_id, $checkUser->user_id, $content, $attachments);
                 // return $storeData;
                 return back()->with(['message', 'success sent message']);
             }
@@ -112,7 +109,7 @@ class ChatController extends Controller
     {
         $userId = Auth::user()->id == $user_id ? $friend_id : $user_id;
         try {
-           $storeMessage = Message::create([
+            $storeMessage = Message::create([
                 'sender_id' => Auth::user()->id,
                 'receiver_id' => $userId,
                 'content' => $content,
@@ -126,15 +123,39 @@ class ChatController extends Controller
     }
     public function addChat($id)
     {
-        Friendship::firstOrCreate([
-            'user_id' => Auth::user()->id,
-            'friend_id' => $id,
-        ]);
-        return back();
+        $userId = Auth::user()->id;
+        $alreadyAdded = Friendship::where(function ($query) use ($id, $userId) {
+            $query->where('user_id', $userId)->where('friend_id', $id);
+        })
+            ->orWhere(function ($query) use ($userId, $id) {
+                $query->where('friend_id', $userId)->where('user_id', $id);
+            })->exists();
+
+        if (!$alreadyAdded) {
+            Friendship::create([
+                'user_id' => Auth::user()->id,
+                'friend_id' => $id,
+            ]);
+            return back()->with('success', 'Friend added successfully!');
+        }
+
+        return back()->with('error', 'Friend already added!');
     }
     public function allUsers()
     {
         $allUser = User::all();
         return response()->json(['allUsers' => $allUser]);
+    }
+
+    public function check($id)
+    {
+        $userId = Auth::user()->id;
+        $alreadyAdded = Friendship::where(function ($query) use ($id, $userId) {
+            $query->where('user_id', $userId)->where('friend_id', $id);
+        })
+            ->orWhere(function ($query) use ($userId, $id) {
+                $query->where('friend_id', $userId)->where('user_id', $id);
+            })->exists();
+        return $alreadyAdded;
     }
 }

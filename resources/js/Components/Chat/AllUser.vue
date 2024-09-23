@@ -9,11 +9,10 @@ const props = defineProps({
     allUser: Array
 });
 const localShowModal = ref(props.showModal);
+const emit = defineEmits(['closeModal']);
 
 const hideModal = () => {
-    localShowModal.value = false;
-    console.log('hidden modal');
-
+    emit('closeModal');
 }
 // const data = Inertia.get(route('check'));
 // console.log(data);
