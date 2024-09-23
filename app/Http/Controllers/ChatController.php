@@ -18,11 +18,11 @@ class ChatController extends Controller
             // Check if the current user is the sender (user_id)
             $query->where('user_id', $userId);
         })
-        ->orWhere(function ($query) use ($userId) {
-            // Check if the current user is the receiver (friend_id)
-            $query->where('friend_id', $userId);
-        })
-        ->get();
+            ->orWhere(function ($query) use ($userId) {
+                // Check if the current user is the receiver (friend_id)
+                $query->where('friend_id', $userId);
+            })
+            ->get();
 
         // Collect user data based on the friendship
         $friendData = $friends->map(function ($friend) use ($userId) {
@@ -35,37 +35,60 @@ class ChatController extends Controller
             }
         });
 
-        return $friends;
+        // return $friends;
 
 
         $userMessage = null;
-    //    $frinds = Friendship::with('friends')->where('user_id', $userId)->orWhere('friend_id', $userId)->get();
-    //    return $frinds;
+        //    $frinds = Friendship::with('friends')->where('user_id', $userId)->orWhere('friend_id', $userId)->get();
+        //    return $frinds;
         if ($id) {
-            // $userMessage = Message::whereRaw('sender_id = ' . Auth::user()->id . ' || receiver_id = ' . Auth::user()->id )->get();
-            $userMessage = Message::where(function ($query) use ($userId) {
-                $query->where('sender_id', $userId)->orWhere('receiver_id', $userId);
-            })
-                ->where(function ($query) use ($id) {
-                    $query->where('sender_id', $id)->orWhere('receiver_id', $id);
-                })->get();
+            $checkUser = Friendship::findOrFail($id);
+
+            $userMessage = Message::where(function ($query) use ($checkUser) {
+                // First condition: user is the sender, friend is the receiver
+                $query->where('sender_id', $checkUser->user_id)
+                    ->where('receiver_id', $checkUser->friend_id);
+            })->orWhere(function ($query) use ($checkUser) {
+                // Second condition: user is the receiver, friend is the sender
+                $query->where('receiver_id', $checkUser->user_id)
+                    ->where('sender_id', $checkUser->friend_id);
+            })->get();
+            // // $userMessage = Message::whereRaw('sender_id = ' . Auth::user()->id . ' || receiver_id = ' . Auth::user()->id )->get();
+            // $userMessage = Message::where(function ($query) use ($userId) {
+            //     $query->where('sender_id', $userId)->orWhere('receiver_id', $userId);
+            // })
+            //     ->where(function ($query) use ($id) {
+            //         $query->where('sender_id', $id)->orWhere('receiver_id', $id);
+            //     })->get();
         }
+        // return $userMessage;
         return Inertia::render('Chat/Index', ['messageData' => $userMessage, 'friends' => $friends]);
     }
 
     public function storeMessage(Request $request, $id)
     {
         $userId = Auth::user()->id;
-        $checkUser = Friendship::where('user_id', $userId)->where('friend_id', $id)->firstOrFail();
+        $checkUser = Friendship::findOrFail($id);
+        // return $checkUser;
         if ($checkUser) {
-            $checkMessage = Message::where('sender_id', $userId)->where('receiver_id', $id)->get();
+            // $checkMessage = Message::where('sender_id', $checkUser->user_id)->where('receiver_id', $checkUser->friend_id)->get();
+            $checkMessage = Message::where(function ($query) use ($checkUser) {
+                // First condition: Check if current user is sender and friend is receiver
+                $query->where('sender_id', $checkUser->user_id)
+                    ->where('receiver_id', $checkUser->friend_id);
+            })->orWhere(function ($query) use ($checkUser) {
+                // Second condition: Check if current user is receiver and friend is sender
+                $query->where('receiver_id', $checkUser->user_id)
+                    ->where('sender_id', $checkUser->friend_id);
+            })->get();
             $content = $request->message;
             $attachments = $request->attachments;
+            $countMessage = $checkMessage->count();
+            // return $countMessage;
 
             if ($checkUser->status == 'blocked') {
                 return 'You are blocked';
             } else if ($checkUser->status == 'pending') {
-                $countMessage = count($checkMessage);
                 if ($countMessage < 2) {
                     $storeDataFN = $this->storeData($id, $content, $attachments);
                     if ($storeDataFN) {
