@@ -14,7 +14,13 @@ class Friendship extends Model
         'friend_id',
     ];
 
-    public function friends(){
+    public function received_requests()
+    {
         return $this->belongsTo(User::class, 'friend_id', 'id');
+    }
+
+    public function sent_requests()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }
