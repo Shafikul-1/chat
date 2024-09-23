@@ -90,33 +90,36 @@ class ChatController extends Controller
                 return 'You are blocked';
             } else if ($checkUser->status == 'pending') {
                 if ($countMessage < 2) {
-                    $storeDataFN = $this->storeData($id, $content, $attachments);
+                    $storeDataFN = $this->storeData($checkUser->friend_id, $checkUser->user_id, $content, $attachments);
                     if ($storeDataFN) {
+                        // return $storeDataFN;
                         return back();
                     } else {
                         return $storeDataFN;
                     };
                 } else {
-                    return "Your invitaion Not accepted";
+                    return "Your invitaion Not accepted the user";
                 }
             } else {
-                $this->storeData($id, $content, $attachments);
+               $storeData = $this->storeData($checkUser->friend_id, $checkUser->user_id, $content, $attachments);
+                // return $storeData;
                 return back()->with(['message', 'success sent message']);
             }
         }
         return "wrong User";
     }
-    private function storeData($receiverId, $content, $attachments)
+    private function storeData($friend_id, $user_id,  $content, $attachments)
     {
+        $userId = Auth::user()->id == $user_id ? $friend_id : $user_id;
         try {
-            Message::create([
+           $storeMessage = Message::create([
                 'sender_id' => Auth::user()->id,
-                'receiver_id' => $receiverId,
+                'receiver_id' => $userId,
                 'content' => $content,
                 'attachments' => $attachments,
                 'content_type' => 'text',
             ]);
-            return true;
+            return $storeMessage;
         } catch (\Throwable $th) {
             return $th->getMessage();
         }
