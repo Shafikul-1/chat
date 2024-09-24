@@ -18,41 +18,30 @@ class ChatController extends Controller
         $allFriends = $frinds->map(function ($friend) use ($userId) {
 
             $friendId = ($friend->user_id == $userId) ? $friend->friend_id : $friend->user_id;
-            $otherData = $this->otherData($friendId, $userId);
+
+            $user = User::find($friendId);
+            $messages = $this->checkFMessageId(Message::class, 'sender_id', $userId, 'receiver_id', $friendId, 'get');
+
             return [
                 'id' => $friend->id,
                 'user_id' => $friend->user_id,
                 'friend_id' => $friend->friend_id,
                 'status' => $friend->status,
                 'created_at' => $friend->created_at,
-                'messages' => $otherData['message'],
-                'user' => $otherData['user'],
+                'messages' => $messages,
+                'user' => $user,
             ];
         });
         // return $allFriends;
 
         $messages = null;
         if ($id) {
-            $messages = Message::where(function ($query) use ($id, $userId) {
-                $query->where('sender_id', $userId)->where('receiver_id', $id);
-            })->orWhere(function ($query) use ($id, $userId) {
-                $query->where('sender_id', $id)->where('receiver_id', $userId);
-            })->get();
+            $messages = $this->checkFMessageId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
         }
         // return $messages;
         return Inertia::render('Chat/Index', ['messageData' => $messages, 'allFriends' => $allFriends]);
     }
 
-    private function otherData($friendId, $userId)
-    {
-        $user = User::find($friendId);
-        $message = Message::where(function ($query) use ($friendId, $userId) {
-            $query->where('sender_id', $userId)->where('receiver_id', $friendId);
-        })->orWhere(function ($query) use ($friendId, $userId) {
-            $query->where('sender_id', $friendId)->where('receiver_id', $userId);
-        })->get();
-        return ['message' => $message, 'user' => $user];
-    }
 
     public function storeMessage(Request $request, $chatUserId)
     {
@@ -62,21 +51,7 @@ class ChatController extends Controller
         ]);
 
         $checkUser = $this->checkFMessageId(Friendship::class, 'user_id', $userId, 'friend_id', $chatUserId, 'firstOrFail');
-        // $checkUser = Friendship::where(function ($query) use ($chatUserId, $userId) {
-        //     $query->where('user_id', $userId)->where('friend_id', $chatUserId);
-        // })->orWhere(function ($query) use ($chatUserId, $userId) {
-        //     $query->where('user_id', $chatUserId)->where('friend_id', $userId);
-        // })->firstOrFail();
-
-
-        // $checkMessage = Message::where(function ($query) use ($chatUserId, $userId) {
-        //     $query->where('sender_id', $chatUserId)->where('receiver_id', $userId);
-        // })->orWhere(function ($query) use ($chatUserId, $userId) {
-        //     $query->where('receiver_id', $chatUserId)->where('sender_id', $userId);
-        // })->get();
-
         $checkMessage = $this->checkFMessageId(Message::class, 'sender_id', $chatUserId, 'receiver_id', $userId, 'get');
-
 
         $content = $request->message;
         $attachments = $request->attachments;
