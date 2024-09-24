@@ -7,14 +7,14 @@ const props = defineProps({
 const chatId = (id) => {
     sessionStorage.setItem('chatId', id);
 }
-// console.log(props.allFriends);
+
 
 </script>
 
 <template>
     <div class="flex-1 h-full overflow-auto px-2">
-        <Link :href="route('chat.index', chat.id)" v-for="(chat, index) in props.allFriends" :key="index.id"
-            @click="chatId(chat.id)"
+        <Link :href="route('chat.index', friend.user.id)" v-for="(friend, index) in props.allFriends" :key="index.id"
+            @click="chatId(friend.user.id)"
             class="entry cursor-pointer transform hover:bg-gray-700 hover:shadow-md text-black hover:shadow-indigo-400 transition-all duration-300  bg-white dark:bg-gray-600  mb-4 rounded p-4 flex shadow-md border-l-4 border-red-500">
         <div class="flex-2">
             <div class="w-12 h-12 relative">
@@ -26,21 +26,15 @@ const chatId = (id) => {
         <div class="flex-1 px-2">
             <div class="truncate w-32">
                 <span class="text-gray-800 dark:text-white">
-                    <span class="" v-if="chat.received_requests">
-                        {{ chat.received_requests.name }}
-                    </span>
-                    <span v-else>
-                        {{ chat.sent_requests.name }}
+                    <span>
+                        {{ friend.user.name }}
                     </span>
                 </span>
             </div>
             <div>
                 <small class="text-gray-600 dark:text-white">
-                    <span class="" v-if="chat.received_requests">
-                        {{ chat.received_requests.email }}
-                    </span>
-                    <span v-else>
-                        {{ chat.sent_requests.email }}
+                    <span>
+                        {{ friend.user.email }}
                     </span>
                 </small>
             </div>

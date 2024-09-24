@@ -14,55 +14,64 @@ class ChatController extends Controller
     public function index($id = null)
     {
         $userId = Auth::user()->id;
-        $friends = Friendship::where(function ($query) use ($userId) {
-            // Check if the current user is the sender (user_id)
-            $query->where('user_id', $userId);
-        })
-            ->orWhere(function ($query) use ($userId) {
-                // Check if the current user is the receiver (friend_id)
-                $query->where('friend_id', $userId);
-            })
-            ->get();
+        $frinds = Friendship::where('user_id', $userId)->orWhere('friend_id', $userId)->get();
+        $allFriends = $frinds->map(function ($friend) use ($userId) {
 
-        // Collect user data based on the friendship
-        $friendData = $friends->map(function ($friend) use ($userId) {
-            if ($friend->user_id == $userId) {
-                // If current user is the sender, retrieve the friend's data from the received_requests
-                return $friend->received_requests;
-            } else {
-                // If current user is the receiver, retrieve the sender's data from the sent_requests
-                return $friend->sent_requests;
-            }
+            $friendId = ($friend->user_id == $userId) ? $friend->friend_id : $friend->user_id;
+            $otherData = $this->otherData($friendId, $userId);
+            return [
+                'id' => $friend->id,
+                'user_id' => $friend->user_id,
+                'friend_id' => $friend->friend_id,
+                'status' => $friend->status,
+                'created_at' => $friend->created_at,
+                'messages' => $otherData['message'],
+                'user' => $otherData['user'],
+            ];
         });
-        // return $friends;
+        // return $allFriends;
+
+
+        // $friends = Friendship::where(function ($query) use ($userId) {
+        //     $query->where('user_id', $userId);
+        // })
+        //     ->orWhere(function ($query) use ($userId) {
+        //         $query->where('friend_id', $userId);
+        //     })
+        //     ->get();
+
+        // $friendData = $friends->map(function ($friend) use ($userId) {
+        //     if ($friend->user_id == $userId) {
+        //         return $friend->received_requests;
+        //     } else {
+        //         return $friend->sent_requests;
+        //     }
+        // });
+
 
 
 
         $userMessage = null;
-        //    $frinds = Friendship::with('friends')->where('user_id', $userId)->orWhere('friend_id', $userId)->get();
-        //    return $frinds;
         if ($id) {
-            $checkUser = Friendship::findOrFail($id);
-
-            $userMessage = Message::where(function ($query) use ($checkUser) {
-                // First condition: user is the sender, friend is the receiver
-                $query->where('sender_id', $checkUser->user_id)
-                    ->where('receiver_id', $checkUser->friend_id);
-            })->orWhere(function ($query) use ($checkUser) {
-                // Second condition: user is the receiver, friend is the sender
-                $query->where('receiver_id', $checkUser->user_id)
-                    ->where('sender_id', $checkUser->friend_id);
+            $messages = Message::where(function ($query) use ($id, $userId) {
+                $query->where('sender_id', $userId)->where('receiver_id', $id);
+            })->orWhere(function ($query) use ($id, $userId) {
+                $query->where('sender_id', $id)->where('receiver_id', $userId);
             })->get();
-            // // $userMessage = Message::whereRaw('sender_id = ' . Auth::user()->id . ' || receiver_id = ' . Auth::user()->id )->get();
-            // $userMessage = Message::where(function ($query) use ($userId) {
-            //     $query->where('sender_id', $userId)->orWhere('receiver_id', $userId);
-            // })
-            //     ->where(function ($query) use ($id) {
-            //         $query->where('sender_id', $id)->orWhere('receiver_id', $id);
-            //     })->get();
         }
-        // return $userMessage;
-        return Inertia::render('Chat/Index', ['messageData' => $userMessage, 'friends' => $friends]);
+        // return $messages;
+        return Inertia::render('Chat/Index', ['messageData' => $messages, 'allFriends' => $allFriends]);
+    }
+
+    private function otherData($friendId, $userId)
+    {
+        $user = User::find($friendId);
+        $message = Message::where(function ($query) use ($friendId, $userId) {
+            $query->where('sender_id', $userId)->where('receiver_id', $friendId);
+        })->orWhere(function ($query) use ($friendId, $userId) {
+            $query->where('sender_id', $friendId)->where('receiver_id', $userId);
+        })->get();
+        return ['message' => $message, 'user' => $user];
     }
 
     public function storeMessage(Request $request, $id)

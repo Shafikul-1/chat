@@ -8,9 +8,8 @@ const props = defineProps({
     showModal: Boolean,
     allUser: Array
 });
-const localShowModal = ref(props.showModal);
-const emit = defineEmits(['closeModal']);
 
+const emit = defineEmits(['closeModal']);
 const hideModal = () => {
     emit('closeModal');
 }

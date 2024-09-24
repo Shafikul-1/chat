@@ -10,7 +10,7 @@ import { Inertia } from '@inertiajs/inertia';
 import axios from 'axios';
 const props = defineProps({
     messageData: Array,
-    friends: Array,
+    allFriends: Array,
 });
 
 
@@ -53,9 +53,9 @@ const openModal = () => {
                             </div>
 
                             <!-- User All -->
-                            <template v-if="props.friends != null">
+                            <template v-if="props.allFriends != null">
 
-                                <ChatUser :allFriends="props.friends" />
+                                <ChatUser :allFriends="props.allFriends" />
 
                             </template>
                             <div class="text-center dark:text-white font-bold text-4xl" v-else>No Added User</div>
