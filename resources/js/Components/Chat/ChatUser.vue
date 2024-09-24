@@ -5,7 +5,7 @@ const props = defineProps({
     allFriends: Array,
 });
 const chatId = (id) => {
-    sessionStorage.setItem('chatId', id);
+    sessionStorage.setItem('chatUserId', id);
 }
 
 

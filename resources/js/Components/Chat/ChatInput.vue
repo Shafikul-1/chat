@@ -3,7 +3,7 @@ import { ref, reactive } from 'vue'
 import { Link, usePage, useForm } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia';
 
-const chatId = sessionStorage.getItem('chatId');
+const chatUserId = sessionStorage.getItem('chatUserId');
 const message = ref('');
 const attachments = null;
 
@@ -63,7 +63,7 @@ const submitMessage = () => {
                 </div>
                 <div class="flex-1">
                     <!-- <button @click="submitdata" class="bg-blue-400 w-10 h-10 rounded-full inline-block"> -->
-                    <Link :href="route('chat.storeMessage', chatId)"
+                    <Link :href="route('chat.storeMessage', chatUserId)"
                         :data="{ message: message, attachments: attachments }" method="post" as="button" preserveScroll
                         @click.prevent="submitMessage">
                     <span class="inline-block align-text-bottom">

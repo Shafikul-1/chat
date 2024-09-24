@@ -31,27 +31,7 @@ class ChatController extends Controller
         });
         // return $allFriends;
 
-
-        // $friends = Friendship::where(function ($query) use ($userId) {
-        //     $query->where('user_id', $userId);
-        // })
-        //     ->orWhere(function ($query) use ($userId) {
-        //         $query->where('friend_id', $userId);
-        //     })
-        //     ->get();
-
-        // $friendData = $friends->map(function ($friend) use ($userId) {
-        //     if ($friend->user_id == $userId) {
-        //         return $friend->received_requests;
-        //     } else {
-        //         return $friend->sent_requests;
-        //     }
-        // });
-
-
-
-
-        $userMessage = null;
+        $messages = null;
         if ($id) {
             $messages = Message::where(function ($query) use ($id, $userId) {
                 $query->where('sender_id', $userId)->where('receiver_id', $id);
@@ -74,53 +54,64 @@ class ChatController extends Controller
         return ['message' => $message, 'user' => $user];
     }
 
-    public function storeMessage(Request $request, $id)
+    public function storeMessage(Request $request, $chatUserId)
     {
         $userId = Auth::user()->id;
-        $checkUser = Friendship::findOrFail($id);
-        // return $checkUser;
-        if ($checkUser) {
-            $checkMessage = Message::where(function ($query) use ($checkUser) {
-                $query->where('sender_id', $checkUser->user_id)
-                    ->where('receiver_id', $checkUser->friend_id);
-            })->orWhere(function ($query) use ($checkUser) {
-                $query->where('receiver_id', $checkUser->user_id)
-                    ->where('sender_id', $checkUser->friend_id);
-            })->get();
-            $content = $request->message;
-            $attachments = $request->attachments;
-            $countMessage = $checkMessage->count();
-            // return $countMessage;
+        $request->validate([
+            'message' => 'required',
+        ]);
 
-            if ($checkUser->status == 'blocked') {
+        $checkUser = $this->checkFMessageId(Friendship::class, 'user_id', $userId, 'friend_id', $chatUserId, 'firstOrFail');
+        // $checkUser = Friendship::where(function ($query) use ($chatUserId, $userId) {
+        //     $query->where('user_id', $userId)->where('friend_id', $chatUserId);
+        // })->orWhere(function ($query) use ($chatUserId, $userId) {
+        //     $query->where('user_id', $chatUserId)->where('friend_id', $userId);
+        // })->firstOrFail();
+
+
+        // $checkMessage = Message::where(function ($query) use ($chatUserId, $userId) {
+        //     $query->where('sender_id', $chatUserId)->where('receiver_id', $userId);
+        // })->orWhere(function ($query) use ($chatUserId, $userId) {
+        //     $query->where('receiver_id', $chatUserId)->where('sender_id', $userId);
+        // })->get();
+
+        $checkMessage = $this->checkFMessageId(Message::class, 'sender_id', $chatUserId, 'receiver_id', $userId, 'get');
+
+
+        $content = $request->message;
+        $attachments = $request->attachments;
+        $countMessage = $checkMessage->count();
+
+        switch ($checkUser->status) {
+            case 'blocked':
                 return 'You are blocked';
-            } else if ($checkUser->status == 'pending') {
+
+            case 'pending':
                 if ($countMessage < 2) {
-                    $storeDataFN = $this->storeData($checkUser->friend_id, $checkUser->user_id, $content, $attachments);
+                    $storeDataFN = $this->storeData($chatUserId, $content, $attachments);
                     if ($storeDataFN) {
-                        // return $storeDataFN;
                         return back();
                     } else {
                         return $storeDataFN;
-                    };
+                    }
                 } else {
-                    return "Your invitaion Not accepted the user";
+                    return "Your invitation is not accepted by the user";
                 }
-            } else {
-                $storeData = $this->storeData($checkUser->friend_id, $checkUser->user_id, $content, $attachments);
-                // return $storeData;
+
+            case 'accepted':
+                $storeData = $this->storeData($chatUserId, $content, $attachments);
                 return back()->with(['message', 'success sent message']);
-            }
+
+            default:
+                return 'wrong user';
         }
-        return "wrong User";
     }
-    private function storeData($friend_id, $user_id,  $content, $attachments)
+    private function storeData($chatUserId,  $content, $attachments)
     {
-        $userId = Auth::user()->id == $user_id ? $friend_id : $user_id;
         try {
             $storeMessage = Message::create([
                 'sender_id' => Auth::user()->id,
-                'receiver_id' => $userId,
+                'receiver_id' => $chatUserId,
                 'content' => $content,
                 'attachments' => $attachments,
                 'content_type' => 'text',
@@ -130,6 +121,22 @@ class ChatController extends Controller
             return $th->getMessage();
         }
     }
+
+    private function checkFMessageId($model, $firstCol, $firstVal, $secondCol, $secondVal, $type = "get")
+    {
+        $query = $model::where(function ($query) use ($firstCol, $firstVal, $secondCol, $secondVal) {
+            $query->where($firstCol, $firstVal)->where($secondCol, $secondVal);
+        })->orWhere(function ($query) use ($firstCol, $firstVal, $secondCol, $secondVal) {
+            $query->where($secondCol, $firstVal)->where($firstCol, $secondVal);
+        });
+        return match ($type) {
+            'first' => $query->first(),
+            'firstOrFail' => $query->firstOrFail(),
+            'count' => $query->count(),
+            default => $query->get(),
+        };
+    }
+
     public function addChat($id)
     {
         $userId = Auth::user()->id;
