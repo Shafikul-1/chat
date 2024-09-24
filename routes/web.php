@@ -29,7 +29,7 @@ Route::middleware('auth')->controller(ChatController::class)->name('chat.')->gro
     Route::get('all-users', 'allUsers')->name('allUsers');
     Route::get('chat/{id?}', 'index')->name('index');
     Route::post('chat/{id}', 'storeMessage')->name('storeMessage');
-    Route::post('chat/user/{id}', 'addChat')->name('addChat');
+    Route::post('chat/user/{id}', 'invite')->name('invite');
 });
 
 Route::get('check/{id}', [Chatcontroller::class, 'check'])->name('check');

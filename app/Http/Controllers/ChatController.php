@@ -20,7 +20,7 @@ class ChatController extends Controller
             $friendId = ($friend->user_id == $userId) ? $friend->friend_id : $friend->user_id;
 
             $user = User::find($friendId);
-            $messages = $this->checkFMessageId(Message::class, 'sender_id', $userId, 'receiver_id', $friendId, 'get');
+            $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $friendId, 'get');
 
             return [
                 'id' => $friend->id,
@@ -36,7 +36,7 @@ class ChatController extends Controller
 
         $messages = null;
         if ($id) {
-            $messages = $this->checkFMessageId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
+            $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
         }
         // return $messages;
         return Inertia::render('Chat/Index', ['messageData' => $messages, 'allFriends' => $allFriends]);
@@ -50,8 +50,8 @@ class ChatController extends Controller
             'message' => 'required',
         ]);
 
-        $checkUser = $this->checkFMessageId(Friendship::class, 'user_id', $userId, 'friend_id', $chatUserId, 'firstOrFail');
-        $checkMessage = $this->checkFMessageId(Message::class, 'sender_id', $chatUserId, 'receiver_id', $userId, 'get');
+        $checkUser = $this->checkingId(Friendship::class, 'user_id', $userId, 'friend_id', $chatUserId, 'firstOrFail');
+        $checkMessage = $this->checkingId(Message::class, 'sender_id', $chatUserId, 'receiver_id', $userId, 'get');
 
         $content = $request->message;
         $attachments = $request->attachments;
@@ -97,30 +97,12 @@ class ChatController extends Controller
         }
     }
 
-    private function checkFMessageId($model, $firstCol, $firstVal, $secondCol, $secondVal, $type = "get")
-    {
-        $query = $model::where(function ($query) use ($firstCol, $firstVal, $secondCol, $secondVal) {
-            $query->where($firstCol, $firstVal)->where($secondCol, $secondVal);
-        })->orWhere(function ($query) use ($firstCol, $firstVal, $secondCol, $secondVal) {
-            $query->where($secondCol, $firstVal)->where($firstCol, $secondVal);
-        });
-        return match ($type) {
-            'first' => $query->first(),
-            'firstOrFail' => $query->firstOrFail(),
-            'count' => $query->count(),
-            default => $query->get(),
-        };
-    }
 
-    public function addChat($id)
+
+    public function invite($id)
     {
         $userId = Auth::user()->id;
-        $alreadyAdded = Friendship::where(function ($query) use ($id, $userId) {
-            $query->where('user_id', $userId)->where('friend_id', $id);
-        })
-            ->orWhere(function ($query) use ($userId, $id) {
-                $query->where('friend_id', $userId)->where('user_id', $id);
-            })->exists();
+        $alreadyAdded = $this->checkingId(Friendship::class, 'user_id', $userId, 'friend_id', $id, 'exists');
 
         if (!$alreadyAdded) {
             Friendship::create([
@@ -148,5 +130,21 @@ class ChatController extends Controller
                 $query->where('friend_id', $userId)->where('user_id', $id);
             })->exists();
         return $alreadyAdded;
+    }
+
+    private function checkingId($model, $firstCol, $firstVal, $secondCol, $secondVal, $type = "get")
+    {
+        $query = $model::where(function ($query) use ($firstCol, $firstVal, $secondCol, $secondVal) {
+            $query->where($firstCol, $firstVal)->where($secondCol, $secondVal);
+        })->orWhere(function ($query) use ($firstCol, $firstVal, $secondCol, $secondVal) {
+            $query->where($secondCol, $firstVal)->where($firstCol, $secondVal);
+        });
+        return match ($type) {
+            'first' => $query->first(),
+            'firstOrFail' => $query->firstOrFail(),
+            'count' => $query->count(),
+            'exists' => $query->exists(),
+            default => $query->get(),
+        };
     }
 }

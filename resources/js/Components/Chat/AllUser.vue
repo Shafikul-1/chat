@@ -50,7 +50,7 @@ const hideModal = () => {
                     <p class="text-sm text-gray-800 font-bold">{{ user.name }}</p>
                     <p class="text-xs text-gray-500 mt-0.5">{{ user.email }}</p>
                 </div>
-                <Link :href="route('chat.addChat', user.id)" as="button" method="post"
+                <Link :href="route('chat.invite', user.id)" as="button" method="post"
                     class="text-xs  mt-0.5 ml-auto bg-indigo-500 px-4 py-1 rounded-md hover:bg-indigo-300 text-white hover:text-black cursor-pointer">
                 Invite
                 </Link>
