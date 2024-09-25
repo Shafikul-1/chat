@@ -69,7 +69,7 @@ const toggleChatAllUserSmallDisplay = ()=>{
                             <div class="chat-area flex-1 flex flex-col  h-[95vh] ">
                                 <!-- Chat Text -->
 
-                                <ChatText :userStatus="props.userStatus" :chat_user_name="props.chat_user_name" :messageData="props.messageData" @toggleChatAllUserSmallDisplay="toggleChatAllUserSmallDisplay"/>
+                                <ChatText :chatUserId="props.chatUserId" :userStatus="props.userStatus" :chat_user_name="props.chat_user_name" :messageData="props.messageData" @toggleChatAllUserSmallDisplay="toggleChatAllUserSmallDisplay"/>
                                 <!-- Chat Text -->
 
 

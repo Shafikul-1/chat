@@ -6,6 +6,7 @@ const props = defineProps({
     messageData: Array,
     chat_user_name: Object,
     userStatus: Object,
+    chatUserId: String,
 });
 const user = usePage().props.auth.user;
 
@@ -28,24 +29,33 @@ function handleError(error) {
             <b>{{ chat_user_name.name }}</b>
         </h2>
     </div>
-    <div class="bg-gray-500 w-full py-2 mb-4 rounded-md shadow-md shadow-indigo-400"
-        v-if="props.userStatus.status != 'accepted'">
+    <div class="bg-gray-500 w-full py-2 mb-4 rounded-md shadow-md shadow-indigo-400 text-center">
         <h2 class="font-bold capitalize text-center text-3xl text-green-600">invite Your friend</h2>
-        <div class="flex justify-evenly mt-3">
-            <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'blocked' }" method="post"
-                preserveScroll as="button" @success="handleSuccess" @error="handleError" v-if="props.userStatus.status != 'blocked'"
-                class="capitalize font-bold bg-red-500 rounded-md py-2 px-7 hover:bg-red-800 hover:text-white transition-all">
-            Block</Link>
-            <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'delete' }" method="post"
-                preserveScroll as="button" @success="handleSuccess" @error="handleError"
-                class="capitalize font-bold bg-blue-500 rounded-md py-2 px-7 hover:bg-blue-800 hover:text-white transition-all">
-            Delete</Link>
-            <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'accepted' }" method="post"
-                preserveScroll as="button" @success="handleSuccess" @error="handleError"
-                class="capitalize font-bold bg-green-500 rounded-md py-2 px-7 hover:bg-green-800 hover:text-white transition-all">
-            Accept</Link>
-        </div>
+        <template v-if="props.userStatus">
+            <div class="flex justify-evenly mt-3" v-if="props.userStatus.status != 'accepted'">
+                <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'blocked' }"
+                    method="post" preserveScroll as="button" @success="handleSuccess" @error="handleError"
+                    v-if="props.userStatus.status != 'blocked'"
+                    class="capitalize font-bold bg-red-500 rounded-md py-2 px-7 hover:bg-red-800 hover:text-white transition-all">
+                Block</Link>
+                <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'delete' }" method="post"
+                    preserveScroll as="button" @success="handleSuccess" @error="handleError"
+                    class="capitalize font-bold bg-blue-500 rounded-md py-2 px-7 hover:bg-blue-800 hover:text-white transition-all">
+                Delete</Link>
+                <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'accepted' }"
+                    method="post" preserveScroll as="button" @success="handleSuccess" @error="handleError"
+                    class="capitalize font-bold bg-green-500 rounded-md py-2 px-7 hover:bg-green-800 hover:text-white transition-all">
+                Accept</Link>
+            </div>
+        </template>
+        <template v-else>
+            <Link :href="route('chat.invite', chatUserId)" method="post" preserveScroll
+                as="button" @success="handleSuccess" @error="handleError"
+                class="capitalize font-bold bg-blue-500 rounded-md py-2 px-7 hover:bg-blue-800 hover:text-white transition-all mt-4">
+            invite</Link>
+        </template>
     </div>
+
     <div class="messages flex-1 overflow-auto">
         <div class="message mb-4 flex " :class="{ 'text-right': message.sender_id == user.id }"
             v-for="(message, index) in messageData" :key="index.id">
