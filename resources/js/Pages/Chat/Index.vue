@@ -11,6 +11,7 @@ import axios from 'axios';
 const props = defineProps({
     messageData: Array,
     allFriends: Array,
+    chatUserId: String
 });
 
 
@@ -80,7 +81,7 @@ const openModal = () => {
 
 
                                 <!-- Chat filed Content -->
-                                <ChatInput />
+                                <ChatInput :chatUserId="props.chatUserId"/>
                                 <!-- Chat filed Content -->
                             </div>
                         </template>

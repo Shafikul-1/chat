@@ -39,7 +39,7 @@ class ChatController extends Controller
             $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
         }
         // return $messages;
-        return Inertia::render('Chat/Index', ['messageData' => $messages, 'allFriends' => $allFriends]);
+        return Inertia::render('Chat/Index', ['messageData' => $messages, 'allFriends' => $allFriends,  'chatUserId' => $id, ]);
     }
 
 

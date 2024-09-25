@@ -1,14 +1,24 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, defineProps } from 'vue'
 import { Link, usePage, useForm } from '@inertiajs/vue3';
 import { Inertia } from '@inertiajs/inertia';
 
-const chatUserId = sessionStorage.getItem('chatUserId');
+const props = defineProps({
+    chatUserId: String
+});
+
+// const chatUserId = sessionStorage.getItem('chatUserId');
 const message = ref('');
-const attachments = null;
+const attachments = ref('');
 
 
-const checkMessage = usePage().props.flash.message;
+const submitMessage = () => {
+    if (message.value.trim() !== '') {
+        message.value = '';
+    }
+};
+
+
 // const submitdata = () => {
 // Inertia.post(route('chat.storeMessage', chatId), {
 //     content: 'test here',
@@ -28,14 +38,6 @@ const checkMessage = usePage().props.flash.message;
 // }
 // const user = usePage().props.auth.user;
 // console.log(user);
-const submitMessage = () => {
-    // Check if the message is not empty before submitting
-    if (message.value.trim() !== '') {
-        // Here you can handle the submission logic
-        // After submission logic, clear the input field
-        message.value = '';
-    }
-};
 
 </script>
 
@@ -63,7 +65,7 @@ const submitMessage = () => {
                 </div>
                 <div class="flex-1">
                     <!-- <button @click="submitdata" class="bg-blue-400 w-10 h-10 rounded-full inline-block"> -->
-                    <Link :href="route('chat.storeMessage', chatUserId)"
+                    <Link :href="route('chat.storeMessage', props.chatUserId)"
                         :data="{ message: message, attachments: attachments }" method="post" as="button" preserveScroll
                         @click.prevent="submitMessage">
                     <span class="inline-block align-text-bottom">
