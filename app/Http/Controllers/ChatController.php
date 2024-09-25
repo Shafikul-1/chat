@@ -19,14 +19,19 @@ class ChatController extends Controller
 
             $friendId = ($friend->user_id == $userId) ? $friend->friend_id : $friend->user_id;
 
+            // user Data
             $user = User::find($friendId);
+            // Message Data Latest
             $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $friendId, 'latest');
+            // Count Unread all message
 
+            $unreadMessage = Message::where('receiver_id', $userId)->where('sender_id', $friendId)->where('is_read', false)->count();
             return [
                 'id' => $friend->id,
-                // 'user_id' => $friend->user_id,
                 'friend_id' => $friend->friend_id,
+                'user_id' => $friend->user_id,
                 'status' => $friend->status,
+                'unreadMessage' => $unreadMessage,
                 'created_at' => $friend->created_at,
                 'messages' => $messages,
                 'user' => $user,
@@ -34,6 +39,7 @@ class ChatController extends Controller
         });
 
         $messages = null;
+        $chat_user_name = null;
         if ($id) {
             $chat_user_name = User::find($id);
             $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
@@ -137,6 +143,8 @@ class ChatController extends Controller
         })->orWhere(function ($query) use ($firstCol, $firstVal, $secondCol, $secondVal) {
             $query->where($secondCol, $firstVal)->where($firstCol, $secondVal);
         });
+
+
         return match ($type) {
             'first' => $query->first(),
             'firstOrFail' => $query->firstOrFail(),
