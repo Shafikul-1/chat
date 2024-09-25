@@ -10,6 +10,8 @@ const props = defineProps({
 });
 const user = usePage().props.auth.user;
 const visibleDropdown = ref(null);
+const isEditing = ref(false);
+const editedContent = ref('');
 function handleSuccess(response) {
     console.log(response);
 }
@@ -18,14 +20,19 @@ function handleError(error) {
 }
 
 const otherAction = (messageId) => {
-  // If the dropdown is already visible, hide it
-  if (visibleDropdown.value === messageId) {
-    visibleDropdown.value = null;
-  } else {
-    // Otherwise, show the dropdown for the clicked message
-    visibleDropdown.value = messageId;
-  }
+    if (visibleDropdown.value === messageId) {
+        visibleDropdown.value = null;
+    } else {
+        visibleDropdown.value = messageId;
+    }
 };
+
+function edit(message) {
+    isEditing.value = message.id;
+    editedContent.value = message.content;
+    visibleDropdown.value = null;
+}
+
 </script>
 
 <template>
@@ -106,13 +113,6 @@ const otherAction = (messageId) => {
                 <div class="inline-block relative rounded-full p-2 px-6 "
                     :class="message.sender_id == user.id ? 'bg-gray-300 text-gray-700' : 'bg-blue-600 text-white'">
                     <span>{{ message.content }}</span>
-                    <div class="absolute top-[2.5rem] z-40 inline-flex hidden"
-                        :class="message.sender_id == user.id ? 'right-0' : 'left-0'">
-                        <input type="text" :value="message.content" class="text-black">
-                        <Link href="#" class="bg-gray-500 px-2 py-2 rounded-md">
-                        <i class="fa-solid fa-circle-check text-2xl"></i>
-                        </Link>
-                    </div>
                 </div>
                 <span class="cursor-pointer" v-if="message.sender_id != user.id" @click="otherAction(message.id)">
                     <i class="fa-solid fa-ellipsis-vertical dark:text-white ml-2"></i>
@@ -121,15 +121,31 @@ const otherAction = (messageId) => {
                     <small class="text-gray-500 dark:text-gray-300">{{ message.sent_at }}</small>
                 </div>
             </div>
-            <div
-            v-if="visibleDropdown === message.id"
-                class="absolute left-1/3 top-0 mt-1 w-48 bg-white shadow-lg rounded-md p-2 border dark:bg-gray-400 z-50">
+
+            <div class="absolute top-0 left-0 w-full bg-slate-500 z-50 p-4 rounded-md" v-if="isEditing === message.id">
+                <textarea class="w-full px-2 rounded-md" v-model="message.content"></textarea>
+                <div class=" mt-4 py-3 flex justify-around">
+                    <Link :href="route('chat.messageUpdate', message.id)" method="POST" as="button"
+                        :data="{ updateContent: message.content }" preserveScroll
+                        class="bg-gray-400 hover:bg-gray-700 hover:text-white transition-all capitalize font-bold py-3 rounded-md px-8 ">
+                    update</Link>
+                    <button @click="isEditing = false"
+                        class="bg-red-400 hover:bg-red-700 hover:text-white transition-all capitalize font-bold py-3 rounded-md px-8 ">cancel</button>
+                </div>
+            </div>
+
+            <div v-if="visibleDropdown === message.id"
+                class="absolute left-1/3 top-0 mt-1 bg-white shadow-lg rounded-md p-2 border dark:bg-gray-400 z-50">
                 <ul class="space-y-1">
                     <li>
-                        <Link :href="route('chat.messageDelete',message.id)" @success="handleSuccess"  @error="handleError" method="DELETE" as="button" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600">Delete</Link>
+                        <Link :href="route('chat.messageDelete', message.id)" @success="handleSuccess"
+                            @error="handleError" method="DELETE" as="button"
+                            class="block py-2 px-9 hover:bg-gray-100 dark:hover:bg-gray-600">
+                        Delete</Link>
                     </li>
                     <li>
-                        <Link href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600">Reply</Link>
+                        <button @click="edit(message)"
+                            class="block py-2 hover:bg-gray-100 dark:hover:bg-gray-600 px-9">Reply</button>
                     </li>
                 </ul>
             </div>

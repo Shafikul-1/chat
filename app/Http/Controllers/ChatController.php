@@ -140,6 +140,17 @@ class ChatController extends Controller
         return back()->with(['message' => $deleteMessage]);
     }
 
+    public function messageUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'updateContent' => 'required|string',
+        ]);
+        $updateMessage = Message::where('id', $id)->update([
+            'content' => $request->updateContent,
+        ]);
+        return back()->with(['message' => $updateMessage]);
+    }
+
     public function check($id)
     {
         $userId = Auth::user()->id;
