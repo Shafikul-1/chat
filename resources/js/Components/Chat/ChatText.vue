@@ -10,11 +10,9 @@ const props = defineProps({
 const user = usePage().props.auth.user;
 
 function handleSuccess(response) {
-    // Handle success response (e.g., show a message)
-    console.log(response.message);
+    // console.log(response);
 }
 function handleError(error) {
-    // Handle error response (e.g., show an error message)
     console.error('Error:', error);
 }
 </script>
@@ -33,14 +31,18 @@ function handleError(error) {
     <div class="bg-gray-500 w-full py-2 mb-4 rounded-md shadow-md shadow-indigo-400"
         v-if="props.userStatus.status != 'accepted'">
         <h2 class="font-bold capitalize text-center text-3xl text-green-600">invite Your friend</h2>
-        <div class="flex justify-evenly">
-            <Link :href="route('chat.inviteStatus')" :data="{ id: props.userStatus.id, status: 'block', message: 'test' }" method="post"
-                preserveScroll as="button" @success="handleSuccess" @error="handleError"
+        <div class="flex justify-evenly mt-3">
+            <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'blocked' }" method="post"
+                preserveScroll as="button" @success="handleSuccess" @error="handleError" v-if="props.userStatus.status != 'blocked'"
                 class="capitalize font-bold bg-red-500 rounded-md py-2 px-7 hover:bg-red-800 hover:text-white transition-all">
             Block</Link>
-            <Link :href="route('chat.inviteStatus')" :data="{ id: props.userStatus.id, status: 'accept' }" method="post"
+            <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'delete' }" method="post"
                 preserveScroll as="button" @success="handleSuccess" @error="handleError"
-                class="capitalize font-bold bg-blue-500 rounded-md py-2 px-7 hover:bg-green-800 hover:text-white transition-all">
+                class="capitalize font-bold bg-blue-500 rounded-md py-2 px-7 hover:bg-blue-800 hover:text-white transition-all">
+            Delete</Link>
+            <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'accepted' }" method="post"
+                preserveScroll as="button" @success="handleSuccess" @error="handleError"
+                class="capitalize font-bold bg-green-500 rounded-md py-2 px-7 hover:bg-green-800 hover:text-white transition-all">
             Accept</Link>
         </div>
     </div>

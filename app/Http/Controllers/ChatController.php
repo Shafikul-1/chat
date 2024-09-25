@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Friendship;
 use App\Models\User;
 use Inertia\Inertia;
 use App\Models\Message;
+use App\Models\Friendship;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class ChatController extends Controller
@@ -40,13 +41,14 @@ class ChatController extends Controller
 
         $messages = null;
         $chat_user_name = null;
+        $invite = null;
         if ($id) {
             $invite = $this->checkingId(Friendship::class, 'user_id', $userId, 'friend_id', $id, 'first');
             $chat_user_name = User::find($id);
             $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
         }
         // return $invite;
-        return Inertia::render('Chat/Index', [ 'userStatus' => $invite ,'chat_user_name' => $chat_user_name, 'messageData' => $messages, 'allFriends' => $allFriends,  'chatUserId' => $id,]);
+        return Inertia::render('Chat/Index', ['userStatus' => $invite, 'chat_user_name' => $chat_user_name, 'messageData' => $messages, 'allFriends' => $allFriends,  'chatUserId' => $id,]);
     }
 
     public function storeMessage(Request $request, $chatUserId)
@@ -104,17 +106,20 @@ class ChatController extends Controller
         return back()->with('error', 'Friend already added!');
     }
 
-    public function inviteStatus(Request $request){
-        // return $request;
+    public function inviteStatus(Request $request, $id)
+    {
         $request->validate([
-            'id' => 'required|integer',
             'status' => 'required|string',
-            'message' => 'required|string',
         ]);
-        $inviteUser = Friendship::where('id', $request->id)->update(['status' => $request->status]);
 
-        // Return a response
-        return response()->json(['message' => 'Status updated successfully.']);
+        $query = Friendship::where('id', $id);
+        if ($request->status == 'delete') {
+            $query->delete();
+            return Inertia::render('Chat/Index');
+        } else {
+            $query->update(['status' => $request->status]);
+            return  back()->with(['message' => 'User ' . $request->status . ' Successful', 'status' => 'success']);
+        }
     }
 
     public function allUsers()
