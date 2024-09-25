@@ -32,7 +32,9 @@ const openModal = () => {
 
         })
 };
-
+const toggleChatAllUserSmallDisplay = ()=>{
+    chatAllUser.value = !chatAllUser.value;
+}
 
 </script>
 
@@ -66,17 +68,8 @@ const openModal = () => {
                         <template v-if="props.messageData != null">
                             <div class="chat-area flex-1 flex flex-col">
                                 <!-- Chat Text -->
-                                <div class="flex-3">
-                                    <h2 class="text-xl py-1 mb-8 border-b-2 border-gray-200 dark:text-white">
-                                        <span class="lg:hidden">
-                                            <i @click="chatAllUser = !chatAllUser"
-                                                class="fa-solid fa-bars  mr-5 cursor-pointer w-5 h-5"></i>
-                                        </span>
-                                        Chatting with
-                                        <b>Mercedes Yemelyan</b>
-                                    </h2>
-                                </div>
-                                <ChatText :messageData="props.messageData" />
+
+                                <ChatText :messageData="props.messageData" @toggleChatAllUserSmallDisplay="toggleChatAllUserSmallDisplay"/>
                                 <!-- Chat Text -->
 
 
