@@ -46,7 +46,7 @@ class ChatController extends Controller
             $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
         }
         // return $invite;
-        return Inertia::render('Chat/Index', [ 'userStatus' => $invite->status ,'chat_user_name' => $chat_user_name, 'messageData' => $messages, 'allFriends' => $allFriends,  'chatUserId' => $id,]);
+        return Inertia::render('Chat/Index', [ 'userStatus' => $invite ,'chat_user_name' => $chat_user_name, 'messageData' => $messages, 'allFriends' => $allFriends,  'chatUserId' => $id,]);
     }
 
     public function storeMessage(Request $request, $chatUserId)
@@ -103,6 +103,20 @@ class ChatController extends Controller
 
         return back()->with('error', 'Friend already added!');
     }
+
+    public function inviteStatus(Request $request){
+        // return $request;
+        $request->validate([
+            'id' => 'required|integer',
+            'status' => 'required|string',
+            'message' => 'required|string',
+        ]);
+        $inviteUser = Friendship::where('id', $request->id)->update(['status' => $request->status]);
+
+        // Return a response
+        return response()->json(['message' => 'Status updated successfully.']);
+    }
+
     public function allUsers()
     {
         $allUser = User::all();

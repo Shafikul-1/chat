@@ -5,27 +5,43 @@ defineEmits(['toggleChatAllUserSmallDisplay']);
 const props = defineProps({
     messageData: Array,
     chat_user_name: Object,
-    userStatus: String,
+    userStatus: Object,
 });
 const user = usePage().props.auth.user;
 
+function handleSuccess(response) {
+    // Handle success response (e.g., show a message)
+    console.log(response.message);
+}
+function handleError(error) {
+    // Handle error response (e.g., show an error message)
+    console.error('Error:', error);
+}
 </script>
 
 <template>
     <div class="flex-3">
         <h2 class="text-xl py-1 mb-8 border-b-2 border-gray-200 dark:text-white">
             <span class="lg:hidden">
-                <i @click="$emit('toggleChatAllUserSmallDisplay')" class="fa-solid fa-bars  mr-5 cursor-pointer w-5 h-5"></i>
+                <i @click="$emit('toggleChatAllUserSmallDisplay')"
+                    class="fa-solid fa-bars  mr-5 cursor-pointer w-5 h-5"></i>
             </span>
             Chatting with
             <b>{{ chat_user_name.name }}</b>
         </h2>
     </div>
-    <div class="bg-gray-500 w-full py-2 mb-4 rounded-md shadow-md shadow-indigo-400" v-if="props.userStatus != 'accepted'">
+    <div class="bg-gray-500 w-full py-2 mb-4 rounded-md shadow-md shadow-indigo-400"
+        v-if="props.userStatus.status != 'accepted'">
         <h2 class="font-bold capitalize text-center text-3xl text-green-600">invite Your friend</h2>
         <div class="flex justify-evenly">
-            <Link href="#" class="capitalize font-bold bg-red-500 rounded-md py-2 px-7 hover:bg-red-800 hover:text-white transition-all" as="button">Remove</Link>
-            <Link href="#" class="capitalize font-bold bg-blue-500 rounded-md py-2 px-7 hover:bg-green-800 hover:text-white transition-all" as="button">Accept</Link>
+            <Link :href="route('chat.inviteStatus')" :data="{ id: props.userStatus.id, status: 'block', message: 'test' }" method="post"
+                preserveScroll as="button" @success="handleSuccess" @error="handleError"
+                class="capitalize font-bold bg-red-500 rounded-md py-2 px-7 hover:bg-red-800 hover:text-white transition-all">
+            Block</Link>
+            <Link :href="route('chat.inviteStatus')" :data="{ id: props.userStatus.id, status: 'accept' }" method="post"
+                preserveScroll as="button" @success="handleSuccess" @error="handleError"
+                class="capitalize font-bold bg-blue-500 rounded-md py-2 px-7 hover:bg-green-800 hover:text-white transition-all">
+            Accept</Link>
         </div>
     </div>
     <div class="messages flex-1 overflow-auto">

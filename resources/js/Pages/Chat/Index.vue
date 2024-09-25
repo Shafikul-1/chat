@@ -13,7 +13,7 @@ const props = defineProps({
     allFriends: Array,
     chatUserId: String,
     chat_user_name: Object,
-    userStatus: String,
+    userStatus: Object,
 });
 
 const chatAllUser = ref(false);
