@@ -31,6 +31,7 @@ Route::middleware('auth')->controller(ChatController::class)->name('chat.')->gro
     Route::post('chat/{id}', 'storeMessage')->name('storeMessage');
     Route::post('chat/user/{id}', 'invite')->name('invite');
     Route::post('chat/invite/{id}', 'inviteStatus')->name('inviteStatus');
+    Route::delete('chat/message/{id}', 'messageDelete')->name('messageDelete');
 });
 
 Route::get('check/{id}', [Chatcontroller::class, 'check'])->name('check');

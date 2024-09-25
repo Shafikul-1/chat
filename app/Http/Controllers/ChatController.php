@@ -134,6 +134,12 @@ class ChatController extends Controller
         return response()->json(['allUsers' => $allUser]);
     }
 
+    public function messageDelete($id)
+    {
+        $deleteMessage = Message::find($id)->delete();
+        return back()->with(['message' => $deleteMessage]);
+    }
+
     public function check($id)
     {
         $userId = Auth::user()->id;
@@ -145,6 +151,7 @@ class ChatController extends Controller
             })->exists();
         return $alreadyAdded;
     }
+
 
     private function storeData($chatUserId,  $content, $attachments)
     {

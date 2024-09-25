@@ -9,13 +9,23 @@ const props = defineProps({
     chatUserId: String,
 });
 const user = usePage().props.auth.user;
-
+const visibleDropdown = ref(null);
 function handleSuccess(response) {
-    // console.log(response);
+    console.log(response);
 }
 function handleError(error) {
     console.error('Error:', error);
 }
+
+const otherAction = (messageId) => {
+  // If the dropdown is already visible, hide it
+  if (visibleDropdown.value === messageId) {
+    visibleDropdown.value = null;
+  } else {
+    // Otherwise, show the dropdown for the clicked message
+    visibleDropdown.value = messageId;
+  }
+};
 </script>
 
 <template>
@@ -79,7 +89,7 @@ function handleError(error) {
 
     <!-- chat message show -->
     <div class="messages flex-1 overflow-auto">
-        <div class="message mb-4 flex " :class="{ 'text-right': message.sender_id == user.id }"
+        <div class="message dropdownshow mb-4 flex relative" :class="{ 'text-right': message.sender_id == user.id }"
             v-for="(message, index) in messageData" :key="index.id">
             <div class="flex-2" v-if="message.sender_id != user.id">
                 <div class="w-12 h-12 relative">
@@ -90,13 +100,38 @@ function handleError(error) {
                 </div>
             </div>
             <div class="flex-1 px-2">
-                <div class="inline-block  rounded-full p-2 px-6 "
+                <span class="cursor-pointer" v-if="message.sender_id == user.id">
+                    <i class="fa-solid fa-ellipsis-vertical dark:text-white mr-2" @click="otherAction(message.id)"></i>
+                </span>
+                <div class="inline-block relative rounded-full p-2 px-6 "
                     :class="message.sender_id == user.id ? 'bg-gray-300 text-gray-700' : 'bg-blue-600 text-white'">
                     <span>{{ message.content }}</span>
+                    <div class="absolute top-[2.5rem] z-40 inline-flex hidden"
+                        :class="message.sender_id == user.id ? 'right-0' : 'left-0'">
+                        <input type="text" :value="message.content" class="text-black">
+                        <Link href="#" class="bg-gray-500 px-2 py-2 rounded-md">
+                        <i class="fa-solid fa-circle-check text-2xl"></i>
+                        </Link>
+                    </div>
                 </div>
+                <span class="cursor-pointer" v-if="message.sender_id != user.id" @click="otherAction(message.id)">
+                    <i class="fa-solid fa-ellipsis-vertical dark:text-white ml-2"></i>
+                </span>
                 <div class="pl-4">
                     <small class="text-gray-500 dark:text-gray-300">{{ message.sent_at }}</small>
                 </div>
+            </div>
+            <div
+            v-if="visibleDropdown === message.id"
+                class="absolute left-1/3 top-0 mt-1 w-48 bg-white shadow-lg rounded-md p-2 border dark:bg-gray-400 z-50">
+                <ul class="space-y-1">
+                    <li>
+                        <Link :href="route('chat.messageDelete',message.id)" @success="handleSuccess"  @error="handleError" method="DELETE" as="button" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600">Delete</Link>
+                    </li>
+                    <li>
+                        <Link href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600">Reply</Link>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
