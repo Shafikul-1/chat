@@ -32,14 +32,20 @@ class ChatController extends Controller
                 'user' => $user,
             ];
         });
-        // return $allFriends;
 
         $messages = null;
         if ($id) {
+            $chat_user_name = User::find($id);
             $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
+            // $messages->map(function($message){
+            //    if ($message->receiver_id) {
+            //     $reciver = User::find($message->receiver_id);
+            //     $message->receiver_name = $reciver->name;
+            //    }
+            // });
         }
         // return $messages;
-        return Inertia::render('Chat/Index', ['messageData' => $messages, 'allFriends' => $allFriends,  'chatUserId' => $id, ]);
+        return Inertia::render('Chat/Index', ['chat_user_name' => $chat_user_name, 'messageData' => $messages, 'allFriends' => $allFriends,  'chatUserId' => $id, ]);
     }
 
 

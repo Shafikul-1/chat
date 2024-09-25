@@ -3,7 +3,8 @@ import { ref, reactive, defineProps, defineEmits } from 'vue'
 import { usePage } from '@inertiajs/vue3';
 defineEmits(['toggleChatAllUserSmallDisplay']);
 const props = defineProps({
-    messageData: Array
+    messageData: Array,
+    chat_user_name: Object
 });
 const user = usePage().props.auth.user;
 // console.log(user.id);
@@ -16,7 +17,7 @@ const user = usePage().props.auth.user;
                 <i @click="$emit('toggleChatAllUserSmallDisplay')" class="fa-solid fa-bars  mr-5 cursor-pointer w-5 h-5"></i>
             </span>
             Chatting with
-            <b>Mercedes Yemelyan</b>
+            <b>{{ chat_user_name.name }}</b>
         </h2>
     </div>
     <div class="messages flex-1 overflow-auto">
