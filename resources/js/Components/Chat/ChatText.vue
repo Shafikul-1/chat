@@ -1,13 +1,14 @@
 <script setup>
 import { ref, reactive, defineProps, defineEmits } from 'vue'
-import { usePage } from '@inertiajs/vue3';
+import { usePage, Link } from '@inertiajs/vue3';
 defineEmits(['toggleChatAllUserSmallDisplay']);
 const props = defineProps({
     messageData: Array,
-    chat_user_name: Object
+    chat_user_name: Object,
+    userStatus: String,
 });
 const user = usePage().props.auth.user;
-// console.log(user.id);
+
 </script>
 
 <template>
@@ -19,6 +20,13 @@ const user = usePage().props.auth.user;
             Chatting with
             <b>{{ chat_user_name.name }}</b>
         </h2>
+    </div>
+    <div class="bg-gray-500 w-full py-2 mb-4 rounded-md shadow-md shadow-indigo-400" v-if="props.userStatus != 'accepted'">
+        <h2 class="font-bold capitalize text-center text-3xl text-green-600">invite Your friend</h2>
+        <div class="flex justify-evenly">
+            <Link href="#" class="capitalize font-bold bg-red-500 rounded-md py-2 px-7 hover:bg-red-800 hover:text-white transition-all" as="button">Remove</Link>
+            <Link href="#" class="capitalize font-bold bg-blue-500 rounded-md py-2 px-7 hover:bg-green-800 hover:text-white transition-all" as="button">Accept</Link>
+        </div>
     </div>
     <div class="messages flex-1 overflow-auto">
         <div class="message mb-4 flex " :class="{ 'text-right': message.sender_id == user.id }"

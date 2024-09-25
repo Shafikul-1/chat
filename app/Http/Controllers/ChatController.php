@@ -41,11 +41,12 @@ class ChatController extends Controller
         $messages = null;
         $chat_user_name = null;
         if ($id) {
+            $invite = $this->checkingId(Friendship::class, 'user_id', $userId, 'friend_id', $id, 'first');
             $chat_user_name = User::find($id);
             $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
         }
-        // return $allFriends;
-        return Inertia::render('Chat/Index', ['chat_user_name' => $chat_user_name, 'messageData' => $messages, 'allFriends' => $allFriends,  'chatUserId' => $id,]);
+        // return $invite;
+        return Inertia::render('Chat/Index', [ 'userStatus' => $invite->status ,'chat_user_name' => $chat_user_name, 'messageData' => $messages, 'allFriends' => $allFriends,  'chatUserId' => $id,]);
     }
 
     public function storeMessage(Request $request, $chatUserId)

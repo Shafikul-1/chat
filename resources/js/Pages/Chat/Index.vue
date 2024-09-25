@@ -12,10 +12,9 @@ const props = defineProps({
     messageData: Array,
     allFriends: Array,
     chatUserId: String,
-    chat_user_name: Object
+    chat_user_name: Object,
+    userStatus: String,
 });
-
-
 
 const chatAllUser = ref(false);
 
@@ -70,7 +69,7 @@ const toggleChatAllUserSmallDisplay = ()=>{
                             <div class="chat-area flex-1 flex flex-col  h-[95vh] ">
                                 <!-- Chat Text -->
 
-                                <ChatText :chat_user_name="props.chat_user_name" :messageData="props.messageData" @toggleChatAllUserSmallDisplay="toggleChatAllUserSmallDisplay"/>
+                                <ChatText :userStatus="props.userStatus" :chat_user_name="props.chat_user_name" :messageData="props.messageData" @toggleChatAllUserSmallDisplay="toggleChatAllUserSmallDisplay"/>
                                 <!-- Chat Text -->
 
 

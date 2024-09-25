@@ -19,7 +19,7 @@ const limitedMessages = computed(() => {
 <template>
     <div class="flex-1 h-full overflow-auto px-2">
         <Link :href="route('chat.index', friend.user.id)" v-for="(friend, index) in props.allFriends" :key="index.id"
-         class="entry cursor-pointer transform hover:bg-gray-700 hover:shadow-md text-black hover:shadow-indigo-400 transition-all duration-300  bg-white dark:bg-gray-600  mb-4 rounded p-4 flex shadow-md border-l-4 border-red-500">
+        as="button"  class="entry min-w-full cursor-pointer transform hover:bg-gray-700 hover:shadow-md text-black hover:shadow-indigo-400 transition-all duration-300  bg-white dark:bg-gray-600  mb-4 rounded p-4 flex shadow-md border-l-4 border-red-500">
         <div class="flex-2">
             <div class="w-12 h-12 relative">
                 <img class="w-12 h-12 rounded-full mx-auto" src="http://localhost:8000/public/107.jpg"
@@ -27,7 +27,7 @@ const limitedMessages = computed(() => {
                 <span class="absolute w-4 h-4 bg-gray-400 rounded-full right-0 bottom-0 border-2 border-white"></span>
             </div>
         </div>
-        <div class="flex-1 px-2">
+        <div class="flex-1 ">
             <div class="truncate w-32">
                 <span class="text-gray-800 dark:text-white">
                     <span>
@@ -35,7 +35,7 @@ const limitedMessages = computed(() => {
                     </span>
                 </span>
             </div>
-            <div>
+            <div class="text-start pl-4">
                 <small class="text-gray-600 dark:text-white">
                     <span>
                         {{ limitedMessages[index] }}
