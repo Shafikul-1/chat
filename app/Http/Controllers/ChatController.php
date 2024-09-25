@@ -121,7 +121,7 @@ class ChatController extends Controller
         $query = Friendship::where('id', $id);
         if ($request->status == 'delete') {
             $query->delete();
-            return Inertia::render('Chat/Index');
+            return Inertia::setRootView('Chat/Index');
         } else {
             $query->update(['status' => $request->status]);
             return  back()->with(['message' => 'User ' . $request->status . ' Successful', 'status' => 'success']);
