@@ -1,10 +1,19 @@
 <script setup>
-import { ref, reactive, watch } from 'vue'
+import { ref, reactive, watch, computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3';
 const props = defineProps({
     allFriends: Array,
 });
 
+const limitedMessages = computed(() => {
+    return props.allFriends.map(friend => {
+        if (friend.messages && friend.messages.content) {
+            return friend.messages.content.split(" ").slice(0, 20).join(" ") +
+                (friend.messages.content.split(" ").length > 20 ? "..." : "");
+        }
+        return '';
+    });
+});
 </script>
 
 <template>
@@ -29,7 +38,7 @@ const props = defineProps({
             <div>
                 <small class="text-gray-600 dark:text-white">
                     <span>
-                        {{ friend.user.email }}
+                        {{ limitedMessages[index] }}
                     </span>
                 </small>
             </div>

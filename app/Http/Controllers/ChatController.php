@@ -20,11 +20,11 @@ class ChatController extends Controller
             $friendId = ($friend->user_id == $userId) ? $friend->friend_id : $friend->user_id;
 
             $user = User::find($friendId);
-            $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $friendId, 'get');
+            $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $friendId, 'latest');
 
             return [
                 'id' => $friend->id,
-                'user_id' => $friend->user_id,
+                // 'user_id' => $friend->user_id,
                 'friend_id' => $friend->friend_id,
                 'status' => $friend->status,
                 'created_at' => $friend->created_at,
@@ -37,17 +37,10 @@ class ChatController extends Controller
         if ($id) {
             $chat_user_name = User::find($id);
             $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
-            // $messages->map(function($message){
-            //    if ($message->receiver_id) {
-            //     $reciver = User::find($message->receiver_id);
-            //     $message->receiver_name = $reciver->name;
-            //    }
-            // });
         }
-        // return $messages;
-        return Inertia::render('Chat/Index', ['chat_user_name' => $chat_user_name, 'messageData' => $messages, 'allFriends' => $allFriends,  'chatUserId' => $id, ]);
+        // return $allFriends;
+        return Inertia::render('Chat/Index', ['chat_user_name' => $chat_user_name, 'messageData' => $messages, 'allFriends' => $allFriends,  'chatUserId' => $id,]);
     }
-
 
     public function storeMessage(Request $request, $chatUserId)
     {
@@ -87,23 +80,6 @@ class ChatController extends Controller
                 return 'wrong user';
         }
     }
-    private function storeData($chatUserId,  $content, $attachments)
-    {
-        try {
-            $storeMessage = Message::create([
-                'sender_id' => Auth::user()->id,
-                'receiver_id' => $chatUserId,
-                'content' => $content,
-                'attachments' => $attachments,
-                'content_type' => 'text',
-            ]);
-            return $storeMessage;
-        } catch (\Throwable $th) {
-            return $th->getMessage();
-        }
-    }
-
-
 
     public function invite($id)
     {
@@ -138,6 +114,22 @@ class ChatController extends Controller
         return $alreadyAdded;
     }
 
+    private function storeData($chatUserId,  $content, $attachments)
+    {
+        try {
+            $storeMessage = Message::create([
+                'sender_id' => Auth::user()->id,
+                'receiver_id' => $chatUserId,
+                'content' => $content,
+                'attachments' => $attachments,
+                'content_type' => 'text',
+            ]);
+            return $storeMessage;
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
+    }
+
     private function checkingId($model, $firstCol, $firstVal, $secondCol, $secondVal, $type = "get")
     {
         $query = $model::where(function ($query) use ($firstCol, $firstVal, $secondCol, $secondVal) {
@@ -150,6 +142,7 @@ class ChatController extends Controller
             'firstOrFail' => $query->firstOrFail(),
             'count' => $query->count(),
             'exists' => $query->exists(),
+            'latest' => $query->latest('created_at')->first(),
             default => $query->get(),
         };
     }
