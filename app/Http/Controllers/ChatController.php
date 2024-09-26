@@ -66,7 +66,7 @@ class ChatController extends Controller
             $chat_user_name = User::find($id);
             $messages = $this->allMessage($userId,  $id);
         }
-        // return $allFriends;
+        // return $messages;
         return Inertia::render('Chat/Index', [
             'userStatus' => $invite,
             'chat_user_name' => $chat_user_name,
