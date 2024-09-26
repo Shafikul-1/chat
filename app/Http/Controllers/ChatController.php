@@ -139,6 +139,11 @@ class ChatController extends Controller
 
         $query = Friendship::where('id', $id);
         if ($request->status == 'delete') {
+            $request->validate([
+                'chatUserId' => 'required|integer',
+            ]);
+
+            $this->checkingId(Message::class, 'sender_id', $request->chatUserId, 'receiver_id', Auth::user()->id, 'delete');
             $query->delete();
             return Inertia::setRootView('Chat/Index');
         } else {
@@ -228,6 +233,7 @@ class ChatController extends Controller
 
         return match ($type) {
             'first' => $query->first(),
+            'delete' => $query->delete(),
             'firstOrFail' => $query->firstOrFail(),
             'count' => $query->count(),
             'exists' => $query->exists(),

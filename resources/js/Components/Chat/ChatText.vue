@@ -71,7 +71,7 @@ function handleError(error) {
                         v-if="props.userStatus.status != 'blocked'"
                         class="capitalize font-bold bg-red-500 rounded-md py-2 px-7 hover:bg-red-800 hover:text-white transition-all">
                     Block</Link>
-                    <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'delete' }"
+                    <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'delete', chatUserId: chatUserId }"
                         method="post" preserveScroll as="button" @success="handleSuccess" @error="handleError"
                         class="capitalize font-bold bg-blue-500 rounded-md py-2 px-7 hover:bg-blue-800 hover:text-white transition-all">
                     Delete</Link>
@@ -86,16 +86,16 @@ function handleError(error) {
         <!-- user status or delete -->
         <div v-else>
             <div class="bg-gray-500 w-full py-2 mb-4 rounded-md shadow-md shadow-indigo-400 text-center"
-                v-if="props.userStatus.status != 'accepted'">
-                <h1 class="font-bold capitalize text-center text-2xl ">
-                    user Status {{ props.userStatus.status }}
-                </h1>
-                <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'delete' }" method="post"
-                    preserveScroll as="button" @success="handleSuccess" @error="handleError"
-                    class="capitalize font-bold bg-blue-500 rounded-md py-2 px-7 hover:bg-blue-800 hover:text-white transition-all mt-3">
-                Delete</Link>
-            </div>
+            v-if="props.userStatus.status != 'accepted'">
+            <h1 class="font-bold capitalize text-center text-2xl ">
+                user Status {{ props.userStatus.status }}
+            </h1>
+            <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'delete', chatUserId: chatUserId }" method="post"
+            preserveScroll as="button" @success="handleSuccess" @error="handleError"
+            class="capitalize font-bold bg-blue-500 rounded-md py-2 px-7 hover:bg-blue-800 hover:text-white transition-all mt-3">
+            Delete</Link>
         </div>
+    </div>
     </template>
 
     <!-- invite freind if already no exists -->
