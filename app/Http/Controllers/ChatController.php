@@ -24,8 +24,27 @@ class ChatController extends Controller
             $user = User::find($friendId);
             // Message Data Latest
             $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $friendId, 'latest');
-            // Count Unread all message
+            if ($messages != null) {
+                switch ($messages->is_deleted_by) {
+                    case 'unsend':
+                        $messages->content = 'Message Unsend';
+                        break;
 
+                    case 'reciver':
+                        if ($messages->receiver_id == $userId) {
+                            $messages->content = 'Message Deleted';
+                        }
+                        break;
+
+                    case 'sender':
+                        if ($messages->sender_id == $userId) {
+                            $messages->content = 'Message Deleted';
+                        }
+                        break;
+                }
+            }
+
+            // Count Unread all message
             $unreadMessage = Message::where('receiver_id', $userId)->where('sender_id', $friendId)->where('is_read', false)->count();
             return [
                 'id' => $friend->id,
@@ -45,10 +64,9 @@ class ChatController extends Controller
         if ($id) {
             $invite = $this->checkingId(Friendship::class, 'user_id', $userId, 'friend_id', $id, 'first');
             $chat_user_name = User::find($id);
-            // $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
             $messages = $this->allMessage($userId,  $id);
         }
-        // return $messages;
+        // return $allFriends;
         return Inertia::render('Chat/Index', [
             'userStatus' => $invite,
             'chat_user_name' => $chat_user_name,
@@ -214,27 +232,34 @@ class ChatController extends Controller
         };
     }
 
-    private function allMessage($userId,  $receiver_id){
-        $messages = Message::where(function ($query) use($userId,  $receiver_id) {
+    private function allMessage($userId,  $receiver_id)
+    {
+        $messages = Message::where(function ($query) use ($userId,  $receiver_id) {
             $query->where('sender_id', $userId)->where('receiver_id', $receiver_id);
-        })->orWhere(function ($query) use($userId,  $receiver_id) {
+        })->orWhere(function ($query) use ($userId,  $receiver_id) {
             $query->where('receiver_id', $userId)->where('sender_id', $receiver_id);
         })->get()
-        ->map(function ($message) use ($userId, $receiver_id) {
-            if($message->is_deleted_by === 'unsend'){
-                $message->content = 'Message Unsend';
-            }
+            ->map(function ($message) use ($userId, $receiver_id) {
+                switch ($message->is_deleted_by) {
+                    case 'unsend':
+                        $message->content = 'Message Unsend';
+                        break;
 
-            if($message->is_deleted_by === 'reciver' && $message->receiver_id == $userId){
-                $message->content = 'Message Deleted';
-            }
+                    case 'reciver':
+                        if ($message->receiver_id == $userId) {
+                            $message->content = 'Message Deleted';
+                        }
+                        break;
 
-            if($message->is_deleted_by === 'sender' && $message->sender_id == $userId){
-                $message->content = 'Message Deleted';
-            }
+                    case 'sender':
+                        if ($message->sender_id == $userId) {
+                            $message->content = 'Message Deleted';
+                        }
+                        break;
+                }
 
-            return $message;
-        });
+                return $message;
+            });
         return $messages;
     }
 
