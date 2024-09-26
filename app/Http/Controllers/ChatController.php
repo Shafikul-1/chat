@@ -167,8 +167,11 @@ class ChatController extends Controller
             if ($query->is_deleted_by == null) {
                 $query->update(['is_deleted_by' => 'sender']);
             }
-            if ($request->action == 'unsend') {
-                $query->update(['is_deleted_by' => 'unsend']);
+
+            if ($query->is_deleted_by != 'sender') {
+                if ($request->action == 'unsend') {
+                    $query->update(['is_deleted_by' => 'unsend']);
+                }
             }
         }
 
@@ -177,6 +180,7 @@ class ChatController extends Controller
                 $query->update(['is_deleted_by' => 'reciver']);
             }
         }
+
         return back()->with(['message' => 'Action successful', 'status' => 'success']);
     }
 
