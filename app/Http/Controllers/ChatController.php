@@ -92,7 +92,7 @@ class ChatController extends Controller
 
         switch ($checkUser->status) {
             case 'blocked':
-                return 'You are blocked';
+                return back()->with(['message' => 'You are Blocked', 'status' => 'fail']);
 
             case 'pending':
                 if ($countMessage < 2) {
@@ -100,18 +100,18 @@ class ChatController extends Controller
                     if ($storeDataFN) {
                         return back();
                     } else {
-                        return $storeDataFN;
+                       return back()->with(['message' => 'Someting went wrong store message', 'status' => 'fail']);
                     }
                 } else {
-                    return "Your invitation is not accepted by the user";
+                    return back()->with(['message' => 'Your invitation is not accepted by the user', 'status' => 'fail']);
                 }
 
             case 'accepted':
                 $storeData = $this->storeData($chatUserId, $content, $attachments);
-                return back()->with(['message', 'success sent message']);
+                return back()->with(['message', 'success sent message', 'status' => 'success']);
 
             default:
-                return 'wrong user';
+            return back()->with(['message' => 'are you wrong user?', 'status' => 'fail']);
         }
     }
 
@@ -152,9 +152,17 @@ class ChatController extends Controller
         }
     }
 
-    public function allUsers()
+    public function allUsers(Request $request)
     {
-        $allUser = User::all();
+        $searchTerm = $request->input('search');
+        $query = User::query();
+        if($searchTerm){
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'Like', '%' . $searchTerm . '%')->orWhere('email', 'Like', '%' . $searchTerm . '%');
+            });
+        }
+        // $allUser = User::limit(10)->get();
+        $allUser = $query->limit(10)->get();
         return response()->json(['allUsers' => $allUser]);
     }
 
@@ -222,7 +230,7 @@ class ChatController extends Controller
         }
     }
 
-    private function checkingId($model, $firstCol, $firstVal, $secondCol, $secondVal, $type = "get")
+    private function checkingId($model, $firstCol, $firstVal, $secondCol, $secondVal, $type = "get", $limit = 10)
     {
         $query = $model::where(function ($query) use ($firstCol, $firstVal, $secondCol, $secondVal) {
             $query->where($firstCol, $firstVal)->where($secondCol, $secondVal);
@@ -237,6 +245,7 @@ class ChatController extends Controller
             'firstOrFail' => $query->firstOrFail(),
             'count' => $query->count(),
             'exists' => $query->exists(),
+            'limit' => $query->limit($limit)->get(),
             'latest' => $query->latest('created_at')->first(),
             default => $query->get(),
         };
