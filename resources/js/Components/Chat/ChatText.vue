@@ -32,7 +32,9 @@ function edit(message) {
     editedContent.value = message.content;
     visibleDropdown.value = null;
 }
-
+function formatContent(message) {
+    return message.replace(/\n/g, '<br>');
+}
 </script>
 
 <template>
@@ -50,8 +52,11 @@ function edit(message) {
 
         <!-- request user accept delete blocked -->
         <template v-if="user.id != props.userStatus.user_id">
-            <div class="flex justify-evenly mt-3" v-if="props.userStatus.status != 'accepted'">
-                <div class="bg-gray-500 w-full py-2 mb-4 rounded-md shadow-md shadow-indigo-400 text-center">
+            <div class=" bg-gray-500 w-full py-2 mb-4 rounded-md shadow-md shadow-indigo-400 text-center" v-if="props.userStatus.status != 'accepted'">
+                <h1 class="font-bold capitalize text-center text-2xl ">
+                    user Status {{ props.userStatus.status }}
+                </h1>
+                <div class=" flex justify-evenly">
                     <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'blocked' }"
                         method="post" preserveScroll as="button" @success="handleSuccess" @error="handleError"
                         v-if="props.userStatus.status != 'blocked'"
@@ -73,7 +78,8 @@ function edit(message) {
         <div v-else>
             <div class="bg-gray-500 w-full py-2 mb-4 rounded-md shadow-md shadow-indigo-400 text-center"
                 v-if="props.userStatus.status != 'accepted'">
-                <h1 class="font-bold capitalize text-center text-2xl "> user Status {{ props.userStatus.status }}
+                <h1 class="font-bold capitalize text-center text-2xl ">
+                    user Status {{ props.userStatus.status }}
                 </h1>
                 <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'delete' }" method="post"
                     preserveScroll as="button" @success="handleSuccess" @error="handleError"
@@ -112,7 +118,7 @@ function edit(message) {
                 </span>
                 <div class="inline-block relative rounded-full p-2 px-6 "
                     :class="message.sender_id == user.id ? 'bg-gray-300 text-gray-700' : 'bg-blue-600 text-white'">
-                    <span>{{ message.content }}</span>
+                    <span v-html="formatContent(message.content)"></span>
                 </div>
                 <span class="cursor-pointer" v-if="message.sender_id != user.id" @click="otherAction(message.id)">
                     <i class="fa-solid fa-ellipsis-vertical dark:text-white ml-2"></i>
@@ -126,7 +132,8 @@ function edit(message) {
                 <textarea class="w-full px-2 rounded-md" v-model="message.content"></textarea>
                 <div class=" mt-4 py-3 flex justify-around">
                     <Link :href="route('chat.messageUpdate', message.id)" method="POST" as="button"
-                        :data="{ updateContent: message.content }" preserveScroll
+                        :data="{ updateContent: message.content, chatUserId: chatUserId }" preserveScroll
+                         @success="handleSuccess" @error="handleError"
                         class="bg-gray-400 hover:bg-gray-700 hover:text-white transition-all capitalize font-bold py-3 rounded-md px-8 ">
                     update</Link>
                     <button @click="isEditing = false"
@@ -143,9 +150,13 @@ function edit(message) {
                             class="block py-2 px-9 hover:bg-gray-100 dark:hover:bg-gray-600">
                         Delete</Link>
                     </li>
+                    <li v-if="message.sender_id == user.id">
+                        <button @click="edit(message)"
+                            class="block py-2 hover:bg-gray-100 dark:hover:bg-gray-600 px-9">Edit</button>
+                    </li>
                     <li>
                         <button @click="edit(message)"
-                            class="block py-2 hover:bg-gray-100 dark:hover:bg-gray-600 px-9">Reply</button>
+                            class="block py-2 hover:bg-gray-100 dark:hover:bg-gray-600 px-9">reply</button>
                     </li>
                 </ul>
             </div>

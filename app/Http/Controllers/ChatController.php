@@ -136,7 +136,7 @@ class ChatController extends Controller
 
     public function messageDelete($id)
     {
-        $deleteMessage = Message::find($id)->delete();
+        $deleteMessage = Message::find($id)->update(['is_deleted_by_sender' => true]);
         return back()->with(['message' => $deleteMessage]);
     }
 
@@ -144,25 +144,18 @@ class ChatController extends Controller
     {
         $request->validate([
             'updateContent' => 'required|string',
+            'chatUserId' => 'required|integer',
         ]);
-        $updateMessage = Message::where('id', $id)->update([
-            'content' => $request->updateContent,
-        ]);
-        return back()->with(['message' => $updateMessage]);
-    }
 
-    public function check($id)
-    {
-        $userId = Auth::user()->id;
-        $alreadyAdded = Friendship::where(function ($query) use ($id, $userId) {
-            $query->where('user_id', $userId)->where('friend_id', $id);
-        })
-            ->orWhere(function ($query) use ($userId, $id) {
-                $query->where('friend_id', $userId)->where('user_id', $id);
-            })->exists();
-        return $alreadyAdded;
+        $query = Message::where('sender_id', Auth::user()->id)->where('receiver_id', $request->chatUserId)->where('id', $id);
+        if($query->exists()){
+            $updateMessage = Message::where('id', $id)->update([
+                'content' => $request->updateContent,
+            ]);
+            return back()->with(['message' => 'successful edit', 'status' => $updateMessage ]);
+        }
+        return back()->with(['message' => 'it is not your message', 'status' => 'fail']);
     }
-
 
     private function storeData($chatUserId,  $content, $attachments)
     {
@@ -197,5 +190,20 @@ class ChatController extends Controller
             'latest' => $query->latest('created_at')->first(),
             default => $query->get(),
         };
+    }
+
+
+
+
+    public function check($id)
+    {
+        $userId = Auth::user()->id;
+        $alreadyAdded = Friendship::where(function ($query) use ($id, $userId) {
+            $query->where('user_id', $userId)->where('friend_id', $id);
+        })
+            ->orWhere(function ($query) use ($userId, $id) {
+                $query->where('friend_id', $userId)->where('user_id', $id);
+            })->exists();
+        return $alreadyAdded;
     }
 }
