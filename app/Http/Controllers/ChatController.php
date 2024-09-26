@@ -45,9 +45,10 @@ class ChatController extends Controller
         if ($id) {
             $invite = $this->checkingId(Friendship::class, 'user_id', $userId, 'friend_id', $id, 'first');
             $chat_user_name = User::find($id);
-            $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
+            // $messages = $this->checkingId(Message::class, 'sender_id', $userId, 'receiver_id', $id, 'get');
+            $messages = $this->allMessage($userId,  $id);
         }
-        // return $invite;
+        // return $messages;
         return Inertia::render('Chat/Index', [
             'userStatus' => $invite,
             'chat_user_name' => $chat_user_name,
@@ -159,24 +160,6 @@ class ChatController extends Controller
             }
         }
         return back()->with(['message' => 'Action successful', 'status' => 'success']);
-
-
-        // if ($query != null) {
-        //     $deleteBy = $query->is_deleted_by;
-        //     if ($deleteBy == null) {
-        //         $query->update(['is_deleted_by' => 'sender']);
-        //         return back()->with(['message' => 'delete successful', 'status' => 'success']);
-        //     } else if ($deleteBy == 'sender') {
-        //         return back()->with(['message' => 'delete already you', 'status' => 'success']);
-        //     } else if ($deleteBy == 'reciver') {
-        //         $query->update(['is_deleted_by' => 'unsend']);
-        //         return back()->with(['message' => 'unsend message', 'status' => 'success']);
-        //     }
-        // } else {
-        //     $query ? $query->update(['is_deleted_by' => 'sender']) : Message::where('id', $id)->update(['is_deleted_by' => 'reciver']);
-        // }
-
-        // return back()->with(['message' => 'success', 'status' => $deleteMessage, 'share_data' => ['sender_id' => Auth::user()->id, 'receiver_id' => $request->chatUserId]]);
     }
 
     public function messageUpdate(Request $request, $id)
@@ -231,6 +214,29 @@ class ChatController extends Controller
         };
     }
 
+    private function allMessage($userId,  $receiver_id){
+        $messages = Message::where(function ($query) use($userId,  $receiver_id) {
+            $query->where('sender_id', $userId)->where('receiver_id', $receiver_id);
+        })->orWhere(function ($query) use($userId,  $receiver_id) {
+            $query->where('receiver_id', $userId)->where('sender_id', $receiver_id);
+        })->get()
+        ->map(function ($message) use ($userId, $receiver_id) {
+            if($message->is_deleted_by === 'unsend'){
+                $message->content = 'Message Unsend';
+            }
+
+            if($message->is_deleted_by === 'reciver' && $message->receiver_id == $userId){
+                $message->content = 'Message Deleted';
+            }
+
+            if($message->is_deleted_by === 'sender' && $message->sender_id == $userId){
+                $message->content = 'Message Deleted';
+            }
+
+            return $message;
+        });
+        return $messages;
+    }
 
 
 
