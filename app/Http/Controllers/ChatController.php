@@ -138,22 +138,43 @@ class ChatController extends Controller
     {
         $request->validate([
             'chatUserId' => 'required|integer',
+            'action' => 'required|string',
         ]);
-        $query = Message::where('sender_id', Auth::user()->id)->where('receiver_id', $request->chatUserId)->where('id', $id)->first();
-        if ($query != null) {
-            $deleteBy = $query->is_deleted_by;
-            if($deleteBy == null){
+
+        $query = Message::where('id', $id)->first();
+        // return $query;
+
+        if ($query->sender_id == Auth::user()->id) {
+            if ($query->is_deleted_by == null) {
                 $query->update(['is_deleted_by' => 'sender']);
-                return back()->with(['message' => 'delete successful', 'status' => 'success']);
-            } else if ($deleteBy == 'sender') {
-                return back()->with(['message' => 'delete already you', 'status' => 'success']);
-            } else if ($deleteBy == 'reciver') {
-                $query->update(['is_deleted_by' => 'unsend']);
-                return back()->with(['message' => 'unsend message', 'status' => 'success']);
             }
-        } else {
-            $query ? $query->update(['is_deleted_by' => 'sender']) : Message::where('id', $id)->update(['is_deleted_by' => 'reciver']);
+            if ($request->action == 'unsend') {
+                $query->update(['is_deleted_by' => 'unsend']);
+            }
         }
+
+        if ($query->receiver_id == Auth::user()->id) {
+            if ($query->is_deleted_by == null) {
+                $query->update(['is_deleted_by' => 'reciver']);
+            }
+        }
+        return back()->with(['message' => 'Action successful', 'status' => 'success']);
+
+
+        // if ($query != null) {
+        //     $deleteBy = $query->is_deleted_by;
+        //     if ($deleteBy == null) {
+        //         $query->update(['is_deleted_by' => 'sender']);
+        //         return back()->with(['message' => 'delete successful', 'status' => 'success']);
+        //     } else if ($deleteBy == 'sender') {
+        //         return back()->with(['message' => 'delete already you', 'status' => 'success']);
+        //     } else if ($deleteBy == 'reciver') {
+        //         $query->update(['is_deleted_by' => 'unsend']);
+        //         return back()->with(['message' => 'unsend message', 'status' => 'success']);
+        //     }
+        // } else {
+        //     $query ? $query->update(['is_deleted_by' => 'sender']) : Message::where('id', $id)->update(['is_deleted_by' => 'reciver']);
+        // }
 
         // return back()->with(['message' => 'success', 'status' => $deleteMessage, 'share_data' => ['sender_id' => Auth::user()->id, 'receiver_id' => $request->chatUserId]]);
     }

@@ -12,12 +12,6 @@ const user = usePage().props.auth.user;
 const visibleDropdown = ref(null);
 const isEditing = ref(false);
 const editedContent = ref('');
-function handleSuccess(response) {
-    console.log(response);
-}
-function handleError(error) {
-    console.error('Error:', error);
-}
 
 const otherAction = (messageId) => {
     if (visibleDropdown.value === messageId) {
@@ -34,6 +28,16 @@ function edit(message) {
 }
 function formatContent(message) {
     return message.replace(/\n/g, '<br>');
+}
+
+function handleSuccess(response) {
+    if(response.props.flash.status == 'success'){
+        visibleDropdown.value = null;
+    }
+    // console.log(response);
+}
+function handleError(error) {
+    console.error('Error:', error);
 }
 </script>
 
@@ -146,9 +150,15 @@ function formatContent(message) {
                 <ul class="space-y-1">
                     <li>
                         <Link :href="route('chat.messageDelete', message.id)" @success="handleSuccess"
-                            @error="handleError" method="DELETE" as="button" :data="{ chatUserId: chatUserId }"
+                            @error="handleError" method="DELETE" as="button" :data="{ chatUserId: chatUserId, action: 'delete' }"
                             class="block py-2 px-9 hover:bg-gray-100 dark:hover:bg-gray-600">
                         Delete</Link>
+                    </li>
+                    <li v-if="message.sender_id == user.id">
+                        <Link :href="route('chat.messageDelete', message.id)" @success="handleSuccess"
+                            @error="handleError" method="DELETE" as="button" :data="{ chatUserId: chatUserId, action: 'unsend' }"
+                            class="block py-2 px-9 hover:bg-gray-100 dark:hover:bg-gray-600">
+                        Unsend</Link>
                     </li>
                     <li v-if="message.sender_id == user.id">
                         <button @click="edit(message)"
