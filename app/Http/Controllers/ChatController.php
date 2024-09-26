@@ -134,10 +134,28 @@ class ChatController extends Controller
         return response()->json(['allUsers' => $allUser]);
     }
 
-    public function messageDelete($id)
+    public function messageDelete(Request $request, $id)
     {
-        $deleteMessage = Message::find($id)->update(['is_deleted_by_sender' => true]);
-        return back()->with(['message' => $deleteMessage]);
+        $request->validate([
+            'chatUserId' => 'required|integer',
+        ]);
+        $query = Message::where('sender_id', Auth::user()->id)->where('receiver_id', $request->chatUserId)->where('id', $id)->first();
+        if ($query != null) {
+            $deleteBy = $query->is_deleted_by;
+            if($deleteBy == null){
+                $query->update(['is_deleted_by' => 'sender']);
+                return back()->with(['message' => 'delete successful', 'status' => 'success']);
+            } else if ($deleteBy == 'sender') {
+                return back()->with(['message' => 'delete already you', 'status' => 'success']);
+            } else if ($deleteBy == 'reciver') {
+                $query->update(['is_deleted_by' => 'unsend']);
+                return back()->with(['message' => 'unsend message', 'status' => 'success']);
+            }
+        } else {
+            $query ? $query->update(['is_deleted_by' => 'sender']) : Message::where('id', $id)->update(['is_deleted_by' => 'reciver']);
+        }
+
+        // return back()->with(['message' => 'success', 'status' => $deleteMessage, 'share_data' => ['sender_id' => Auth::user()->id, 'receiver_id' => $request->chatUserId]]);
     }
 
     public function messageUpdate(Request $request, $id)
@@ -148,11 +166,11 @@ class ChatController extends Controller
         ]);
 
         $query = Message::where('sender_id', Auth::user()->id)->where('receiver_id', $request->chatUserId)->where('id', $id);
-        if($query->exists()){
+        if ($query->exists()) {
             $updateMessage = Message::where('id', $id)->update([
                 'content' => $request->updateContent,
             ]);
-            return back()->with(['message' => 'successful edit', 'status' => $updateMessage ]);
+            return back()->with(['message' => 'successful edit', 'status' => $updateMessage]);
         }
         return back()->with(['message' => 'it is not your message', 'status' => 'fail']);
     }

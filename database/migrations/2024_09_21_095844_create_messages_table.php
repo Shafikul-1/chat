@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamp('sent_at')->useCurrent();
             $table->timestamp('read_at')->nullable();
             $table->boolean('is_seen')->default(false);
-            $table->boolean('is_deleted_by_sender')->default(false);
+            $table->enum('is_deleted_by', ['sender', 'reciver', 'unsend'])->nullable();
             $table->foreignId('reply_to')->nullable()->constrained('messages');
             $table->json('attachments')->nullable();
             $table->timestamps();

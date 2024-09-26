@@ -52,7 +52,8 @@ function formatContent(message) {
 
         <!-- request user accept delete blocked -->
         <template v-if="user.id != props.userStatus.user_id">
-            <div class=" bg-gray-500 w-full py-2 mb-4 rounded-md shadow-md shadow-indigo-400 text-center" v-if="props.userStatus.status != 'accepted'">
+            <div class=" bg-gray-500 w-full py-2 mb-4 rounded-md shadow-md shadow-indigo-400 text-center"
+                v-if="props.userStatus.status != 'accepted'">
                 <h1 class="font-bold capitalize text-center text-2xl ">
                     user Status {{ props.userStatus.status }}
                 </h1>
@@ -133,7 +134,6 @@ function formatContent(message) {
                 <div class=" mt-4 py-3 flex justify-around">
                     <Link :href="route('chat.messageUpdate', message.id)" method="POST" as="button"
                         :data="{ updateContent: message.content, chatUserId: chatUserId }" preserveScroll
-                         @success="handleSuccess" @error="handleError"
                         class="bg-gray-400 hover:bg-gray-700 hover:text-white transition-all capitalize font-bold py-3 rounded-md px-8 ">
                     update</Link>
                     <button @click="isEditing = false"
@@ -146,7 +146,7 @@ function formatContent(message) {
                 <ul class="space-y-1">
                     <li>
                         <Link :href="route('chat.messageDelete', message.id)" @success="handleSuccess"
-                            @error="handleError" method="DELETE" as="button"
+                            @error="handleError" method="DELETE" as="button" :data="{ chatUserId: chatUserId }"
                             class="block py-2 px-9 hover:bg-gray-100 dark:hover:bg-gray-600">
                         Delete</Link>
                     </li>
@@ -155,8 +155,7 @@ function formatContent(message) {
                             class="block py-2 hover:bg-gray-100 dark:hover:bg-gray-600 px-9">Edit</button>
                     </li>
                     <li>
-                        <button @click="edit(message)"
-                            class="block py-2 hover:bg-gray-100 dark:hover:bg-gray-600 px-9">reply</button>
+                        <button class="block py-2 hover:bg-gray-100 dark:hover:bg-gray-600 px-9">reply</button>
                     </li>
                 </ul>
             </div>
