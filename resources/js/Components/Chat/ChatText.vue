@@ -16,19 +16,6 @@ const isEditing = ref(false);
 const editedContent = ref('');
 const hoverMessageId = ref(null);
 
-const otherAction = (messageId) => {
-    if (visibleDropdown.value === messageId) {
-        visibleDropdown.value = null;
-    } else {
-        visibleDropdown.value = messageId;
-    }
-};
-
-function edit(message) {
-    isEditing.value = message.id;
-    editedContent.value = message.content;
-    visibleDropdown.value = null;
-}
 function formatContent(message) {
     return message.replace(/\n/g, '<br>');
 }
@@ -47,7 +34,6 @@ function handleError(error) {
     console.error('Error:', error);
 }
 
-
 const toggleDropdown = (message) => {
     if (visibleDropdown.value === message.id) {
         visibleDropdown.value = null;
@@ -55,9 +41,11 @@ const toggleDropdown = (message) => {
         visibleDropdown.value = message.id;
     }
 };
+
 const dropdownClass = (message) => {
     return message.sender_id === user.id ? 'right-[8rem] top-[-0.5rem]' : 'left-[8rem] top-[-0.5rem]';
 };
+
 const verticalDropdownClass = (messageId) => {
     const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
     if (messageElement) {
