@@ -56,7 +56,7 @@ const toggleDropdown = (message) => {
     }
 };
 const dropdownClass = (message) => {
-    return message.sender_id === user.id ? 'right-[8rem]' : 'left-[8rem]';
+    return message.sender_id === user.id ? 'right-[8rem] top-[-0.5rem]' : 'left-[8rem] top-[-0.5rem]';
 };
 const verticalDropdownClass = (messageId) => {
     const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
@@ -186,7 +186,7 @@ const editMessage = (message) => {
             <!-- Dropdown Menu -->
             <div v-if="visibleDropdown === message.id"
                 :class="['absolute', dropdownClass(message), verticalDropdownClass(message.id)]"
-                class="bg-white shadow-lg rounded-md p-2 border dark:bg-gray-400 z-50">
+                class="bg-white shadow-lg rounded-md p-2 border dark:bg-gray-800 dark:text-white z-50">
                 <ul class="space-y-1">
                     <li>
                         <button class="block py-2 hover:bg-gray-100 dark:hover:bg-gray-600 px-9">reply</button>
@@ -215,6 +215,25 @@ const editMessage = (message) => {
                     </li>
                 </ul>
             </div>
+
+
+            <div class="fixed xl:right-[8rem] right-0 top-1/2 transform -translate-y-1/2 xl:w-1/2 w-full bg-slate-500 z-20 p-4 rounded-md"
+                v-if="isEditing === message.id">
+                <textarea class="w-full px-2 rounded-md" v-model="message.content"></textarea>
+                <div class="mt-4 py-3 flex justify-around">
+                    <Link :href="route('chat.messageUpdate', message.id)" method="POST" as="button"
+                        :data="{ updateContent: message.content, chatUserId: chatUserId }" preserveScroll
+                        @success="handleSuccess" @error="handleError"
+                        class="bg-gray-400 hover:bg-gray-700 hover:text-white transition-all capitalize font-bold py-3 rounded-md px-8">
+                    Update
+                    </Link>
+                    <button @click="isEditing = false"
+                        class="bg-red-400 hover:bg-red-700 hover:text-white transition-all capitalize font-bold py-3 rounded-md px-8">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 </template>
