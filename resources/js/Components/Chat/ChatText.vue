@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, defineProps, defineEmits } from 'vue'
+import { ref, reactive, defineProps, defineEmits, onMounted, watch, nextTick } from 'vue'
 import { usePage, Link } from '@inertiajs/vue3';
 defineEmits(['toggleChatAllUserSmallDisplay']);
 const props = defineProps({
@@ -46,13 +46,14 @@ const dropdownClass = (message) => {
     return message.sender_id === user.id ? 'right-[8rem] top-[-0.5rem]' : 'left-[8rem] top-[-0.5rem]';
 };
 
-const verticalDropdownClass = (messageId) => {
+const verticalDropdownClass = (messageId, isLastMessage) => {
     const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
     if (messageElement) {
         const rect = messageElement.getBoundingClientRect();
         const windowHeight = window.innerHeight;
 
-        if (rect.bottom + 150 > windowHeight) {
+        // যদি শেষ মেসেজ হয় বা স্ক্রিনের নিচের দিকে থাকে, তাহলে ড্রপডাউনটি উপরে দেখাও
+        if (isLastMessage || rect.bottom > windowHeight - 150) {
             return 'bottom-full mb-2';
         } else {
             return 'top-full mt-2';
@@ -61,10 +62,28 @@ const verticalDropdownClass = (messageId) => {
     return 'top-full mt-2';
 };
 
+
+
 const editMessage = (message) => {
     isEditing.value = message.id;
     visibleDropdown.value = null;
 };
+
+function scrollToBottom() {
+    const chatBox = document.querySelector('.messages');
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+onMounted(() => {
+    nextTick(() => {
+        scrollToBottom(); // মাউন্ট হবার পর স্ক্রল করবে
+    });
+});
+
+watch(props.messageData, async () => {
+    await nextTick();  // DOM আপডেটের পর নিশ্চিত করে
+    scrollToBottom();  // এরপর সবার নিচে স্ক্রল করবে
+});
 
 </script>
 
@@ -173,8 +192,9 @@ const editMessage = (message) => {
 
             <!-- Dropdown Menu -->
             <div v-if="visibleDropdown === message.id"
-                :class="['absolute', dropdownClass(message), verticalDropdownClass(message.id)]"
+                :class="['absolute', dropdownClass(message), verticalDropdownClass(message.id, index === messageData.length - 1)]"
                 class="bg-white shadow-lg rounded-md p-2 border dark:bg-gray-800 dark:text-white z-50">
+
                 <ul class="space-y-1">
                     <li>
                         <button class="block py-2 hover:bg-gray-100 dark:hover:bg-gray-600 px-9">reply</button>
