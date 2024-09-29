@@ -15,7 +15,11 @@ const visibleDropdown = ref(null);
 const isEditing = ref(false);
 const editedContent = ref('');
 const hoverMessageId = ref(null);
+const chatInfo = ref(false);
 
+const chatInfor = ()=>{
+    chatInfo.value = !chatInfo.value;
+}
 function formatContent(message) {
     return message.replace(/\n/g, '<br>');
 }
@@ -52,7 +56,6 @@ const verticalDropdownClass = (messageId, isLastMessage) => {
         const rect = messageElement.getBoundingClientRect();
         const windowHeight = window.innerHeight;
 
-        // যদি শেষ মেসেজ হয় বা স্ক্রিনের নিচের দিকে থাকে, তাহলে ড্রপডাউনটি উপরে দেখাও
         if (isLastMessage || rect.bottom > windowHeight - 150) {
             return 'bottom-full mb-2';
         } else {
@@ -88,7 +91,7 @@ watch(props.messageData, async () => {
 </script>
 
 <template>
-    <div class="flex-3">
+    <div class="flex justify-between z-20">
         <h2 class="text-xl py-1 mb-8 border-b-2 border-gray-200 dark:text-white">
             <span class="lg:hidden">
                 <i @click="$emit('toggleChatAllUserSmallDisplay')"
@@ -97,6 +100,18 @@ watch(props.messageData, async () => {
             Chatting with
             <b>{{ chat_user_name.name }}</b>
         </h2>
+        <div class="relative">
+            <i class="fas fa-ellipsis-v dark:text-white text-2xl cursor-pointer" @click="chatInfor"></i>
+            <ul class="absolute top-0 right-7  bg-gray-800 shadow-md shadow-indigo-300 " v-if="chatInfo">
+                <li>
+                    <Link href="#" class="dark:text-white px-[2rem] hover:bg-indigo-300 inline-block capitalize">clear chat</Link>
+                </li>
+                <li>
+                    <Link :href="route('chat.inviteStatus', props.userStatus.id)" :data="{ status: 'blocked' }"
+                    method="post" preserveScroll as="button" @success="handleSuccess" @error="handleError" class="dark:text-white px-[2rem] hover:bg-indigo-300 inline-block capitalize">Block</Link>
+                </li>
+            </ul>
+        </div>
     </div>
     <template v-if="props.userStatus">
 
