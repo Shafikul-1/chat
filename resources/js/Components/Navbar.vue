@@ -1,9 +1,10 @@
 <script setup>
 import { ref, reactive } from 'vue'
-const collapseMenu = ref(false);
-function toggleMenu(){
-    collapseMenu.value = !collapseMenu.value;
-}
+import { Link } from '@inertiajs/vue3';
+// const collapseMenu = ref(false);
+// function toggleMenu() {
+//     collapseMenu.value = !collapseMenu.value;
+// }
 // var toggleOpen = document.getElementById('toggleOpen');
 // var toggleClose = document.getElementById('toggleClose');
 // var collapseMenu = document.getElementById('collapseMenu');
@@ -18,20 +19,18 @@ function toggleMenu(){
 
 // toggleOpen.addEventListener('click', handleClick);
 // toggleClose.addEventListener('click', handleClick);
-
 </script>
 
 <template>
-<header class='flex shadow-md py-4 px-4 sm:px-10 bg-white font-[sans-serif] min-h-[80px] tracking-wide relative z-50'>
+   <header class='flex shadow-md py-4 px-4 sm:px-10 bg-white font-[sans-serif] min-h-[80px] tracking-wide relative z-50'>
   <div class='flex flex-wrap items-center gap-5 w-full'>
     <a href="javascript:void(0)"><img src="https://readymadeui.com/readymadeui.svg" alt="logo"
         class='w-40 max-lg:mr-5' />
     </a>
 
-    <div id="collapseMenu" v-if="collapseMenu"
-    :style="{ display: collapseMenu ? 'block' : 'none', backgroundColor: collapseMenu ? '#4CAF50' : '#f44336' }"
-      class='max-lg:hidden lg:!flex lg:ml-auto max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-50 max-lg:before:inset-0 max-lg:before:z-50 transition-all'>
-      <button id="toggleClose" @click="toggleMenu" class='lg:hidden fixed top-2 right-4 z-[100] rounded-full bg-white p-3'>
+    <div id="collapseMenu"
+      class='max-lg:hidden lg:!flex lg:ml-auto max-lg:before:fixed max-lg:before:bg-black max-lg:before:opacity-50 max-lg:before:inset-0 max-lg:before:z-50'>
+      <button id="toggleClose" class='lg:hidden fixed top-2 right-4 z-[100] rounded-full bg-white p-3'>
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 fill-black" viewBox="0 0 320.591 320.591">
           <path
             d="M30.391 318.583a30.37 30.37 0 0 1-21.56-7.288c-11.774-11.844-11.774-30.973 0-42.817L266.643 10.665c12.246-11.459 31.462-10.822 42.921 1.424 10.362 11.074 10.966 28.095 1.414 39.875L51.647 311.295a30.366 30.366 0 0 1-21.256 7.288z"
@@ -75,7 +74,7 @@ function toggleMenu(){
         class='px-4 py-2 text-[15px] rounded font-semibold text-[#007bff] border-2 border-[#007bff] hover:bg-[#007bff] transition-all ease-in-out duration-300 bg-transparent hover:text-white'>Sign
         up</button>
 
-      <button id="toggleOpen" @click="toggleMenu" class='lg:hidden'>
+      <button id="toggleOpen" class='lg:hidden'>
         <svg class="w-7 h-7" fill="#333" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd"
             d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
@@ -87,6 +86,4 @@ function toggleMenu(){
 </header>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
